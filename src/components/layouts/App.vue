@@ -22,13 +22,13 @@ export default {
   },
   computed: {
     component() {
-      return this.$store.state.modal.component
+      return this.$store.state.modal.component;
     },
     mobileMenuOpen() {
-      return this.$store.state.general.mobileMenuOpen
+      return this.$store.state.general.mobileMenuOpen;
     },
     menuOpen() {
-      return this.$store.state.general.menuOpen
+      return this.$store.state.general.menuOpen;
     },
 
     getComponent() {

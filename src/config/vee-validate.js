@@ -48,7 +48,7 @@ Vue.use(VeeValidate, {
         // numeric: field => `Поле должно быть числом.`,
         // regex: field => `Поле имеет ошибочный формат.`,
         // required: field => `Поле обязательно для заполнения.`,
-        size: (formatFileSize, [size]) => `Поле должно быть меньше, чем ${formatFileSize(size)}.`,
+        size: (formatFileSize, [size]) => `Поле должно быть меньше, чем ${formatFileSize(size)}.`
         // url: field => `Поле имеет ошибочный формат URL.`
       }
     }

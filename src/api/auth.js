@@ -8,13 +8,13 @@ export default {
         .get("check-token?include=referralLink,rank,country,city,sex,roles,avatar,referralParent.avatar")
         .then(({ data }) => {
           let response = data.data;
-          console.warn(response)
-          console.warn(response)
+          console.warn(response);
+          console.warn(response);
           store.commit("auth/SAVE_USER", response, { root: true });
           return response;
         })
         .catch(() => {
-          console.warn("FAIL LOGIN")
+          console.warn("FAIL LOGIN");
 
           store.dispatch("auth/logout", {}, { root: true });
         });

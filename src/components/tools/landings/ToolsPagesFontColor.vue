@@ -59,7 +59,7 @@ export default {
   },
   computed: {
     insertPosition() {
-      return this.$store.state.toolsPages.stepComplete
+      return this.$store.state.toolsPages.stepComplete;
     },
 
     getBackgroundColor() {

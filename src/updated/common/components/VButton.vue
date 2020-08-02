@@ -23,7 +23,8 @@ export default {
       type: String,
       default: "primary"
     },
-    disabled: Boolean
+    disabled: Boolean,
+    outlined: Boolean
   },
   computed: {
     computedClass() {

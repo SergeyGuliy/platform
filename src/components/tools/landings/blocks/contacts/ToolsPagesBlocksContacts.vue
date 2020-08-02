@@ -78,7 +78,7 @@ export default {
   name: "ToolsPagesBlocksContacts",
   mixins: [pagesBlock],
   data() {
-    console.log(this.$store)
+    console.log(this.$store);
 
     let content = this.$store.state.toolsPages.content;
     return {

@@ -121,7 +121,7 @@ export const mutations = {
 
 export const actions = {
   login({ commit }, data) {
-    console.warn('LOGIN')
+    console.warn("LOGIN");
     let token = data["response-content"].access_token;
     cookie.set("token", token, {
       domain: "." + process.env.FRONT_URL.replace(/^https?:\/\//, "")

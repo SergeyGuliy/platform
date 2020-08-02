@@ -81,8 +81,8 @@ export default {
   },
   computed: {
     insertPosition() {
-      return this.$store.state.toolsPages.stepComplete
-    },
+      return this.$store.state.toolsPages.stepComplete;
+    }
   },
   methods: {
     ...mapActions("toolsPages", ["prevStep", "nextStep", "addRequestToHistory"]),

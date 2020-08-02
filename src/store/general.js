@@ -6,7 +6,7 @@ export const state = {
   showMobileMenu: true,
 
   isMobile: false,
-  isDesktop: false,
+  isDesktop: false
 };
 
 export const getters = {};
@@ -44,7 +44,7 @@ export const mutations = {
 export const actions = {
   async init(context) {
     try {
-      console.error('INIT PROJECT')
+      console.error("INIT PROJECT");
       let token = cookie.get("token");
 
       if (token) {
@@ -52,10 +52,8 @@ export const actions = {
         await context.dispatch("auth/info", null, { root: true });
       }
     } catch (e) {
-      console.error('ERROR INIT PROJECT')
-
+      console.error("ERROR INIT PROJECT");
     }
-
   },
 
   openMenu({ commit }) {

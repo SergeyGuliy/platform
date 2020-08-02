@@ -79,10 +79,10 @@ export default {
   },
   computed: {
     step() {
-      return this.$store.state.toolsPages.step
+      return this.$store.state.toolsPages.step;
     },
     insertPosition() {
-      return this.$store.state.toolsPages.insertPosition
+      return this.$store.state.toolsPages.insertPosition;
     },
 
     id() {

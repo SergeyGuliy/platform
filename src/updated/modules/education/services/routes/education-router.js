@@ -9,7 +9,8 @@ import {
   educationCourseContent,
   courseResource,
   courseLearningPlan,
-  courseAbout
+  courseAbout,
+  educationNewPlatform
 } from "./education-courses-routes-name";
 
 const baseCourseUrl = "/education/courses";
@@ -35,6 +36,14 @@ export const educationRoutes = [
         path: "platform",
         name: educationPlatform,
         component: () => import("../../pages/learning-page/LearningPlatform"),
+        meta: {
+          layout: "app"
+        }
+      },
+      {
+        path: "platform-new",
+        name: educationNewPlatform,
+        component: () => import("../../pages/learning-page/LearningNewPlatform"),
         meta: {
           layout: "app"
         }

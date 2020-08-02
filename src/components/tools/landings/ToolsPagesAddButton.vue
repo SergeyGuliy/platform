@@ -33,8 +33,8 @@ export default {
   },
   computed: {
     insertPosition() {
-      return this.$store.state.toolsPages.insertPosition
-    },
+      return this.$store.state.toolsPages.insertPosition;
+    }
   },
   methods: {
     ...mapActions("toolsPages", ["nextStep", "prevStep", "setContent", "setInsertPosition"]),

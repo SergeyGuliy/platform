@@ -124,10 +124,10 @@ export default {
   },
   computed: {
     requestHistoryPosition() {
-      return this.$store.state.toolsPages.requestHistoryPosition
+      return this.$store.state.toolsPages.requestHistoryPosition;
     },
     requestHistory() {
-      return this.$store.state.toolsPages.requestHistory
+      return this.$store.state.toolsPages.requestHistory;
     },
     ...mapGetters("toolsPages", ["prevRequestHistory", "nextRequestHistory"]),
 

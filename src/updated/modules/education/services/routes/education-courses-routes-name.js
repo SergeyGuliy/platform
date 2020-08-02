@@ -6,6 +6,7 @@ export const educationCategory = "educationCategory",
   educationCourseFullscreen = "courseFullscreen",
   educationTeam = "educationTeam",
   educationPlatform = "educationPlatform",
+  educationNewPlatform = "educationNewPlatform",
   educationAllCourses = "educationAllCourses";
 
 export const courseResource = "courseResource",

@@ -7,9 +7,9 @@ export default {
   },
   computed: {
     $user() {
-      console.log(this.$store.state.auth.user)
-      return this.$store.state.auth.user
-    },
+      console.log(this.$store.state.auth.user);
+      return this.$store.state.auth.user;
+    }
   },
   methods: {
     ...mapActions("modal", ["setModal"]),

@@ -6,7 +6,7 @@
         <div class="learn-course__header-text-subtitle" v-html="headerData.subTitle"></div>
         <course-info-labels v-if="headerData.topicData" :topic-data="headerData.topicData" />
         <div class="learn-course__header-text-start">
-          <v-button class="desktop">
+          <v-button class="desktop" @click="$router.push({ name: 'educationNewPlatform' })">
             {{ headerData.buttonText }}
           </v-button>
         </div>

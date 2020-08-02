@@ -18,13 +18,13 @@ export default {
   },
   computed: {
     stepQuery() {
-      return this.$store.state.toolsPages.stepQuery
+      return this.$store.state.toolsPages.stepQuery;
     },
     insertPosition() {
-      return this.$store.state.toolsPages.insertPosition
+      return this.$store.state.toolsPages.insertPosition;
     },
     stepComplete() {
-      return this.$store.state.toolsPages.stepComplete
+      return this.$store.state.toolsPages.stepComplete;
     },
 
     canBack() {

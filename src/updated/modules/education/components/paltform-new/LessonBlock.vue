@@ -1,12 +1,12 @@
 <template>
-  <div id="newPlatform">
-    newPlatform
+  <div id="LessonBlock">
+    LessonBlock
   </div>
 </template>
 
 <script>
 export default {
-  name: "newPlatform",
+  name: "LessonBlock",
   data() {
     return {};
   },
@@ -16,6 +16,6 @@ export default {
 </script>
 
 <style lang="scss">
-#newPlatform {
+#LessonBlock {
 }
 </style>

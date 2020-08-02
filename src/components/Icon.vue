@@ -15,8 +15,7 @@ export default {
     },
     fill: String
   },
-  mounted() {
-  },
+  mounted() {},
   computed: {
     symbolDefs() {
       return require("../assets/new-symbol-defs.svg");

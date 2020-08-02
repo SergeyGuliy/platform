@@ -25,8 +25,8 @@
       <div class="header__nav">
         <ul class="list">
           <li v-for="(item, id) in menu" :key="id" :class="{ active: isActiveItem(item) }">
-            <router-link v-if="item.to" :to="item.to" @click.native="toggleMobileMenu" >
-              <v-icon :src="item.icon" :style="isActiveItem(item) ? 'fill: #fdbd28' : ''"/>
+            <router-link v-if="item.to" :to="item.to" @click.native="toggleMobileMenu">
+              <v-icon :src="item.icon" :style="isActiveItem(item) ? 'fill: #fdbd28' : ''" />
               <span>{{ item.title }}</span>
             </router-link>
           </li>
@@ -43,11 +43,10 @@
 </template>
 
 <script>
-
 export default {
   name: "Header",
   mounted() {
-    console.log(this)
+    console.log(this);
   },
   data() {
     return {
@@ -82,14 +81,14 @@ export default {
   },
   computed: {
     mobileMenuOpen() {
-      return this.$store.state.general.mobileMenuOpen
+      return this.$store.state.general.mobileMenuOpen;
     },
     menuOpen() {
-      return this.$store.state.general.menuOpen
+      return this.$store.state.general.menuOpen;
     },
     showMobileMenu() {
-      return this.$store.state.general.showMobileMenu
-    },
+      return this.$store.state.general.showMobileMenu;
+    }
   },
   methods: {
     isActiveItem(item) {
@@ -114,10 +113,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .header__nav{
-    .svg-icon.active{
-      fill: url(#my-cool-gradient) #447799;
-
-    }
+.header__nav {
+  .svg-icon.active {
+    fill: url(#my-cool-gradient) #447799;
   }
+}
 </style>

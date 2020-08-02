@@ -14,7 +14,7 @@ Vue.use(require("./plugins/chartist"));
 Vue.use(VCalendar);
 
 config.store.dispatch("general/init", null, { root: true }).finally(() => {
-  console.log(config)
+  console.log(config);
   window.vue = new Vue({
     ...config,
     render: h => h(require("./App.vue").default)
