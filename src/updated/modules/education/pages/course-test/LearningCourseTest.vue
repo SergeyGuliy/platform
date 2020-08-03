@@ -35,7 +35,7 @@
             <ul class="content-tabs-nav">
               <li>
                 <a href="javascript://" onclick="openBlock(event, 'block1')" class="tabs-link tab-visible current-link"
-                  >Учебный план</a
+                  >Учеб11ный план</a
                 >
               </li>
               <li>
