@@ -6,7 +6,7 @@
           <div class="learning-box__body-head">
             <div style="margin-bottom: 20px">
               <div class="learning-box__body-head-title">Учебный план</div>
-              <div class="left-buttons">
+              <div class="left-buttons" v-if="!lessonIsOpen">
                 <v-button
                   style="height: 48px;"
                   class="desktop"
@@ -27,16 +27,33 @@
     </div>
     <div class="builder-tabs-block block LearningNewPlatformMain">
       <div class="header_block">
-        <div class="header_block-section" v-if="!lessonIsOpen">Секций (12); Уроков (98)</div>
+        <div class="header_block-section" v-if="!lessonIsOpen">Секций ({{ sectionsList.length }}); Уроков (98)</div>
       </div>
 
-      <SectionBlock v-if="!lessonIsOpen" :lessonToggle="lessonToggle" />
-      <LessonBlock v-else :toggleHeaderStatus="toggleHeaderStatus" :lessonToggle="lessonToggle" />
+      <div v-if="!lessonIsOpen">
+        <SectionBlock
+          v-for="(section, id) in sectionsList"
+          :key="id"
+          :id="id"
+          :lessonToggle="lessonToggle"
+          :deleteSection="deleteSection"
+          :addLesson="addLesson"
+          :section="section"
+        />
+      </div>
+      <LessonBlock
+        v-else
+        :toggleHeaderStatus="toggleHeaderStatus"
+        :lessonToggle="lessonToggle"
+        :activeSectionId="activeSectionId"
+        :activeLessonId="activeLessonId"
+        :callBackLesson="callBackLesson"
+      />
 
       <v-button custom-type="text" custom-style="primary" v-if="!lessonIsOpen">
         <div style="display: flex; align-items: center">
           <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
-          <span class="bottom__inner">Добавить секцию</span>
+          <span class="bottom__inner" @click="addSection">Добавить секцию</span>
         </div>
       </v-button>
     </div>
@@ -56,12 +73,40 @@ export default {
   },
   data() {
     return {
-      sections: [],
+      sectionsList: [
+        {
+          sectionName: "",
+          limit: "",
+          lessonList: [
+            {
+              lessonName: "qwe"
+            },
+            {
+              lessonName: "qw qweqwe qwe qwee"
+            },
+            {
+              lessonName: "qwqweqw qweqwe qwe e"
+            }
+          ]
+        }
+      ],
+      activeSectionId: 0,
+      activeLessonId: 0,
       lessonIsOpen: false,
       headerIsVisible: true
     };
   },
   methods: {
+    addSection() {
+      this.sectionsList.push({
+        sectionName: "",
+        limit: "",
+        lessonList: []
+      });
+    },
+    deleteSection(id) {
+      this.sectionsList.splice(id, 1);
+    },
     toggleHeaderStatus() {
       this.headerIsVisible = !this.headerIsVisible;
     },
@@ -69,6 +114,19 @@ export default {
       this.openModal("Submit").then(() => {
         this.$router.back();
       });
+    },
+    callBackLesson(sectionId, lessonId, lessonData) {
+      console.log(sectionId);
+      console.log(lessonId);
+      console.log(lessonData);
+      this.sectionsList[sectionId].lessonList.push(lessonData);
+      this.lessonIsOpen = !this.lessonIsOpen;
+    },
+    addLesson(id) {
+      (this.activeSectionId = id), (this.activeLessonId = this.sectionsList[id].lessonList.length);
+      console.log(this.activeSectionId);
+      console.log(this.activeLessonId);
+      this.lessonIsOpen = true;
     },
     lessonToggle() {
       this.lessonIsOpen = !this.lessonIsOpen;

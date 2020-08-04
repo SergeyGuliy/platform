@@ -2,16 +2,20 @@
   <div id="LessonBlock">
     <div class="edit-page" v-if="!showPreview">
       <div class="header_block-forward" style="margin-bottom: 20px;">
-        <v-button custom-type="text" custom-style="secondary" @click="lessonToggle">
+        <v-button
+          custom-type="text"
+          custom-style="secondary"
+          @click="callBackLesson(activeSectionId, activeLessonId, lessonData)"
+        >
           <div style="display: flex; align-items: center">
             <v-icon src="back" style="fill: #1D2228; margin-right: 10px;"></v-icon>
             <span class="bottom__inner" style="color: #1D2228">Стартовый блок</span>
           </div>
         </v-button>
-        <v-button custom-type="text" custom-style="primary">
+        <v-button custom-type="text" custom-style="primary" @click="previewToggle()">
           <div style="display: flex; align-items: center">
             <v-icon src="eye" style="fill: #ffc107; margin-right: 10px;"></v-icon>
-            <span class="bottom__inner" @click="previewToggle()">Предпросмотр урока</span>
+            <span class="bottom__inner">Предпросмотр урока</span>
           </div>
         </v-button>
       </div>
@@ -284,7 +288,10 @@ export default {
   name: "LessonBlock",
   props: {
     toggleHeaderStatus: Function,
-    lessonToggle: Function
+    lessonToggle: Function,
+    callBackLesson: Function,
+    activeSectionId: Number,
+    activeLessonId: Number
   },
   data() {
     return {

@@ -1,12 +1,14 @@
 <template>
-  <div id="SectionBlock">
+  <div class="SectionBlock">
     <div class="section-header">
       <div class="header-left">
         <v-icon src="drag" />
-        <div class="title">Секция 1</div>
+        <div class="title">Секция {{ id + 1 }}</div>
       </div>
       <div class="header-right">
-        <v-icon src="delete" />
+        <div @click="deleteSection(id)">
+          <v-icon src="delete" />
+        </div>
       </div>
     </div>
     <div class="section-body">
@@ -19,7 +21,8 @@
         :options="options"
       />
     </div>
-    <v-button custom-type="text" custom-style="primary" @click="lessonToggle">
+
+    <v-button custom-type="text" custom-style="primary" @click="addLesson(id)">
       <div style="display: flex; align-items: center">
         <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
         <span class="bottom__inner">Добавить урок</span>
@@ -37,7 +40,11 @@ export default {
     VButton
   },
   props: {
-    lessonToggle: Function
+    lessonToggle: Function,
+    deleteSection: Function,
+    addLesson: Function,
+    id: Number,
+    section: Object
   },
   data() {
     return {
@@ -71,7 +78,7 @@ export default {
 </script>
 
 <style lang="scss">
-#SectionBlock {
+.sectionBlock {
   background: #ffffff;
   box-shadow: 0px 1px 4px rgba(57, 70, 111, 0.06), 0px 6px 20px rgba(57, 70, 111, 0.08);
   border-radius: 8px;
