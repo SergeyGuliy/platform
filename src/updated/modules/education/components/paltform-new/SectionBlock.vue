@@ -15,8 +15,8 @@
         name="country_id"
         title="Доступен для (мин. ранг)"
         rules="required"
-        v-model="request"
-        :options="countries"
+        v-model="limit"
+        :options="options"
       />
     </div>
     <v-button custom-type="text" custom-style="primary" @click="lessonToggle">
@@ -42,8 +42,29 @@ export default {
   data() {
     return {
       content: "",
-      request: null,
-      countries: ["DT4", "DT5", "STAR"]
+      limit: null,
+      options: [
+        {
+          value: "DT4",
+          label: "DT4"
+        },
+        {
+          value: "DT5",
+          label: "DT5"
+        },
+        {
+          value: "STAR",
+          label: "STAR"
+        },
+        {
+          value: "ЛО = < 70",
+          label: "ЛО = < 70"
+        },
+        {
+          value: "ЛО = 70",
+          label: "ЛО = 70"
+        }
+      ]
     };
   }
 };
@@ -51,7 +72,6 @@ export default {
 
 <style lang="scss">
 #SectionBlock {
-  height: 208px;
   background: #ffffff;
   box-shadow: 0px 1px 4px rgba(57, 70, 111, 0.06), 0px 6px 20px rgba(57, 70, 111, 0.08);
   border-radius: 8px;

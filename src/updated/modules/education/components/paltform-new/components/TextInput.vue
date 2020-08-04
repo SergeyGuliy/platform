@@ -51,8 +51,13 @@ export default {
 
 <style lang="scss">
 #TextInput {
-  margin: 0 18px;
+  border-top: 1px solid #ebeff5;
+  padding-top: 24px;
+  & > div {
+    padding: 0 18px;
+  }
   .buttons-group {
+    padding: 0 18px;
     display: flex;
     margin-top: 24px;
     button {

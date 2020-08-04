@@ -44,7 +44,6 @@ export const mutations = {
 export const actions = {
   async init(context) {
     try {
-      console.error("INIT PROJECT");
       let token = cookie.get("token");
 
       if (token) {

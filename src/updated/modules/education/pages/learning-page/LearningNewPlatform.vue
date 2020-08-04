@@ -1,26 +1,37 @@
 <template>
-  <div class="builder-tabs-block block" id="LearningNewPlatform">
-    <div class="learning-box__body-content">
+  <div id="LearningNewPlatform">
+    <div class="learning-box" v-if="headerIsVisible">
+      <div class="learning-box__body">
+        <div class="learning-box__body-head-wrapper">
+          <div class="learning-box__body-head">
+            <div style="margin-bottom: 20px">
+              <div class="learning-box__body-head-title">Учебный план</div>
+              <div class="left-buttons">
+                <v-button
+                  style="height: 48px;"
+                  class="desktop"
+                  @click="endCreation()"
+                  custom-type="text"
+                  custom-style="primary"
+                >
+                  Отменить
+                </v-button>
+                <v-button style="height: 48px;" class="desktop">
+                  Сохранить и завершить
+                </v-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="builder-tabs-block block LearningNewPlatformMain">
       <div class="header_block">
         <div class="header_block-section" v-if="!lessonIsOpen">Секций (12); Уроков (98)</div>
-        <div class="header_block-forward" v-else>
-          <v-button custom-type="text" custom-style="secondary" @click="lessonToggle">
-            <div style="display: flex; align-items: center">
-              <v-icon src="back" style="fill: #1D2228; margin-right: 10px;"></v-icon>
-              <span class="bottom__inner" style="color: #1D2228">Стартовый блок</span>
-            </div>
-          </v-button>
-          <v-button custom-type="text" custom-style="primary">
-            <div style="display: flex; align-items: center">
-              <v-icon src="eye" style="fill: #ffc107; margin-right: 10px;"></v-icon>
-              <span class="bottom__inner">Предпросмотр урока</span>
-            </div>
-          </v-button>
-        </div>
       </div>
 
       <SectionBlock v-if="!lessonIsOpen" :lessonToggle="lessonToggle" />
-      <LessonBlock v-else />
+      <LessonBlock v-else :toggleHeaderStatus="toggleHeaderStatus" :lessonToggle="lessonToggle" />
 
       <v-button custom-type="text" custom-style="primary" v-if="!lessonIsOpen">
         <div style="display: flex; align-items: center">
@@ -46,12 +57,20 @@ export default {
   data() {
     return {
       sections: [],
-      lessonIsOpen: false
+      lessonIsOpen: false,
+      headerIsVisible: true
     };
   },
   methods: {
+    toggleHeaderStatus() {
+      this.headerIsVisible = !this.headerIsVisible;
+    },
+    endCreation() {
+      this.openModal("Submit").then(() => {
+        this.$router.back();
+      });
+    },
     lessonToggle() {
-      console.log("lessonToggle");
       this.lessonIsOpen = !this.lessonIsOpen;
     }
   }
@@ -60,36 +79,46 @@ export default {
 
 <style lang="scss">
 #LearningNewPlatform {
-  width: 604px;
-  height: 100%;
-  .learning-box__body-content {
-    margin-bottom: 0;
+  .learning-box__body-head-wrapper {
+    padding: 0;
+  }
+  .learning-box__body-head > div {
+    display: flex;
+    justify-content: space-between;
+  }
+  .left-buttons {
+    display: flex;
+    button:first-child {
+      margin-right: 24px;
+    }
+  }
+  .LearningNewPlatformMain {
+    width: 604px;
     height: 100%;
-    padding-bottom: 0;
-  }
-  .header_block {
-    margin-bottom: 20px;
-    &-section {
-      height: 25px;
-      line-height: 25px;
+    .header_block {
+      margin-bottom: 20px;
+      &-section {
+        height: 25px;
+        line-height: 25px;
+        font-family: "Roboto", sans-serif;
+        font-size: 14px;
+        color: #9ca1ab;
+      }
+      &-forward {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+    .bottom__inner {
       font-family: "Roboto", sans-serif;
-      font-size: 14px;
-      color: #9ca1ab;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 16px;
     }
-    &-forward {
-      display: flex;
-      justify-content: space-between;
-    }
-  }
-  .bottom__inner {
-    font-family: "Roboto", sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    line-height: 16px;
-  }
 
-  svg {
-    font-size: 25px;
+    svg {
+      font-size: 25px;
+    }
   }
 }
 </style>
