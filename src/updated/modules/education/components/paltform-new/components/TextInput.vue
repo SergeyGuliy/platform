@@ -2,13 +2,9 @@
   <div id="TextInput">
     <Editor :richEditorOptions="descriptionEditorOptions" v-model="formData" title="Текст" />
 
-    <div class="buttons-group" style="position: relative; z-index: 2">
-      <v-button class="desktop" @click="closeTextEditor" custom-type="text" custom-style="primary">
-        Отменить
-      </v-button>
-      <v-button class="desktop" @click="sendData">
-        Сохранить
-      </v-button>
+    <div class="buttons-group">
+      <button class="my-button outlined" @click="closeTextEditor">Отменить</button>
+      <button class="my-button filled" @click="sendData">Сохранить</button>
     </div>
   </div>
 </template>
@@ -17,7 +13,6 @@
 import { richEditorOptionPrimary } from "@/updated/common/constants/rich-editor-options";
 
 import Editor from "../../../../../common/components/Editor";
-import VButton from "../../../../../common/components/VButton";
 export default {
   name: "TextInput",
   data() {
@@ -28,23 +23,33 @@ export default {
   },
   methods: {
     sendData() {
+      console.log(this.formData);
       if (this.formData.length === 0) {
         this.closeTextEditor();
       } else {
-        this.saveTextEditor(this.formData);
+        this.saveTextEditor(this.formData, this.crossId);
       }
     }
   },
-  mounted() {
-    this.formData = "";
+  created() {
+    if (this.crossData) {
+      this.formData = this.crossData;
+    } else {
+      this.formData = "";
+    }
   },
   props: {
     closeTextEditor: Function,
-    saveTextEditor: Function
+    saveTextEditor: Function,
+    crossData: {
+      required: false
+    },
+    crossId: {
+      required: false
+    }
   },
   components: {
-    Editor,
-    VButton
+    Editor
   }
 };
 </script>
@@ -53,6 +58,10 @@ export default {
 #TextInput {
   border-top: 1px solid #ebeff5;
   padding-top: 24px;
+
+  svg {
+    fill: #8e99ab;
+  }
   & > div {
     padding: 0 18px;
   }
@@ -60,6 +69,13 @@ export default {
     padding: 0 18px;
     display: flex;
     margin-top: 24px;
+    @media (max-width: 630px) {
+      button {
+        width: 48%;
+        justify-content: center;
+        padding: 0 !important;
+      }
+    }
     button {
       height: 40px;
       padding: 0 32px;

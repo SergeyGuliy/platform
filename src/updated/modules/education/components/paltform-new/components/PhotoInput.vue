@@ -20,7 +20,7 @@
 
         <v-select
           name="country_id"
-          title="Доступен для (мин. ранг)"
+          title="Размер фото"
           rules="required"
           v-model="formData.size"
           @change="change"
@@ -56,17 +56,13 @@
       </div>
       <div class="right">
         <img v-show="urlPhoto" :src="urlPhoto" alt="" width="240px" />
-        <div class="right-header">{{ formData.header }} {{ formData.duration }}</div>
+        <div class="right-header">{{ formData.photo ? formData.photo.name : "" }}</div>
       </div>
     </div>
 
-    <div class="buttons-group" style="position: relative; z-index: 2">
-      <v-button class="desktop" @click="closePhotoEditor" custom-type="text" custom-style="primary">
-        Отменить
-      </v-button>
-      <v-button class="desktop" @click="sendData">
-        Сохранить
-      </v-button>
+    <div class="buttons-group">
+      <button class="my-button outlined" @click="closePhotoEditor">Отменить</button>
+      <button class="my-button filled" @click="sendData">Сохранить</button>
     </div>
   </div>
 </template>
@@ -137,10 +133,13 @@ export default {
     },
     sendData() {
       if (this.formData.photo !== null) {
-        this.savePhotoEditor({
-          ...this.formData,
-          urlPhoto: this.urlPhoto
-        });
+        this.savePhotoEditor(
+          {
+            ...this.formData,
+            urlPhoto: this.urlPhoto
+          },
+          this.crossId
+        );
       } else {
         this.closePhotoEditor();
       }
@@ -170,16 +169,27 @@ export default {
       return bytes.toFixed(dp) + " " + units[u];
     }
   },
-  mounted() {
-    this.formData = {
-      photo: null,
-      header: null,
-      size: "full"
-    };
+  created() {
+    if (this.crossData) {
+      this.formData = { ...this.crossData };
+      this.urlPhoto = this.crossData.urlPhoto;
+    } else {
+      this.formData = {
+        photo: null,
+        header: null,
+        size: "full"
+      };
+    }
   },
   props: {
     closePhotoEditor: Function,
-    savePhotoEditor: Function
+    savePhotoEditor: Function,
+    crossData: {
+      required: false
+    },
+    crossId: {
+      required: false
+    }
   },
   components: {
     VButton
@@ -191,12 +201,30 @@ export default {
 #PhotoInput {
   border-top: 1px solid #ebeff5;
   padding-top: 24px;
+
+  svg {
+    fill: #8e99ab;
+  }
   & > div {
     padding: 0 18px;
   }
   .block {
     display: flex;
     justify-content: space-between;
+    @media (max-width: 630px) {
+      flex-direction: column;
+      .right {
+        order: 0;
+        margin-bottom: 10px;
+        img {
+          min-width: 100%;
+        }
+      }
+      .left {
+        width: 100% !important;
+        order: 1;
+      }
+    }
     .left {
       width: 336px;
       margin-right: 32px;
@@ -260,6 +288,13 @@ export default {
   .buttons-group {
     display: flex;
     margin-top: 24px;
+    @media (max-width: 630px) {
+      button {
+        width: 48%;
+        justify-content: center;
+        padding: 0 !important;
+      }
+    }
     button {
       height: 40px;
       padding: 0 32px;
@@ -268,41 +303,6 @@ export default {
       border: 1px solid #ffc107;
       color: #8b5c00;
       margin-right: 16px;
-    }
-  }
-
-  .form-group .vs__dropdown-toggle {
-    height: 40px;
-    .v-select,
-    .vs__selected-options {
-      height: 40px;
-    }
-    #vs1__combobox {
-      height: 40px;
-    }
-    .vs__selected-options {
-    }
-    input {
-      border: none;
-    }
-    .vs__selected {
-      bottom: 8px;
-      left: 12px;
-      background-color: white;
-      font-family: "Roboto", sans-serif;
-      font-weight: 500;
-      font-size: 14px;
-      line-height: 24px;
-      color: #1d2228;
-    }
-    .vs--open {
-      #vs1__combobox {
-        border: 1px solid #ffc107;
-      }
-      #vs1__listbox {
-        border: 1px solid #ffc107;
-        border-top: none;
-      }
     }
   }
 }

@@ -1,12 +1,8 @@
 <template>
   <div id="LessonBlock">
-    <div class="edit-page" v-if="!showPreview">
+    <div class="edit-page container__small" v-if="!showPreview">
       <div class="header_block-forward" style="margin-bottom: 20px;">
-        <v-button
-          custom-type="text"
-          custom-style="secondary"
-          @click="callBackLesson(activeSectionId, activeLessonId, lessonData)"
-        >
+        <v-button custom-type="text" custom-style="secondary" @click="cancelEditing">
           <div style="display: flex; align-items: center">
             <v-icon src="back" style="fill: #1D2228; margin-right: 10px;"></v-icon>
             <span class="bottom__inner" style="color: #1D2228">Стартовый блок</span>
@@ -40,14 +36,16 @@
         </div>
 
         <template v-for="(block, id) in lessonData.lessonsBlocks">
-          <div v-if="block.type === 'text'" class="section-block" :key="id">
+          <div v-if="block.type === 'text' && id !== crossId" class="section-block" :key="id">
             <div class="section-header">
               <div class="header-left">
                 <v-icon src="drag" />
                 <div class="title">Текст</div>
               </div>
               <div class="header-right">
-                <v-icon src="edit" style="margin-right: 16px" />
+                <div @click="editById(id, block.type, block.data)">
+                  <v-icon src="edit" style="margin-right: 16px" />
+                </div>
                 <div @click="deleteById(id)">
                   <v-icon src="delete" />
                 </div>
@@ -56,14 +54,16 @@
             <div v-html="block.data"></div>
           </div>
 
-          <div v-else-if="block.type === 'video'" class="section-block" :key="id">
+          <div v-else-if="block.type === 'video' && id !== crossId" class="section-block" :key="id">
             <div class="section-header">
               <div class="header-left">
                 <v-icon src="drag" />
                 <div class="title">Видео</div>
               </div>
               <div class="header-right">
-                <v-icon src="edit" style="margin-right: 16px" />
+                <div @click="editById(id, block.type, block.data)">
+                  <v-icon src="edit" style="margin-right: 16px" />
+                </div>
 
                 <div @click="deleteById(id)">
                   <v-icon src="delete" />
@@ -79,15 +79,16 @@
             </div>
           </div>
 
-          <div v-else-if="block.type === 'photo'" class="section-block" :key="id">
+          <div v-else-if="block.type === 'photo' && id !== crossId" class="section-block" :key="id">
             <div class="section-header">
               <div class="header-left">
                 <v-icon src="drag" />
                 <div class="title">Картинка</div>
               </div>
               <div class="header-right">
-                <v-icon src="edit" style="margin-right: 16px" />
-
+                <div @click="editById(id, block.type, block.data)">
+                  <v-icon src="edit" style="margin-right: 16px" />
+                </div>
                 <div @click="deleteById(id)">
                   <v-icon src="delete" />
                 </div>
@@ -141,16 +142,26 @@
           </div>
         </div>
 
-        <TextInput v-if="editorsStatus.text" :closeTextEditor="closeTextEditor" :saveTextEditor="saveTextEditor" />
+        <TextInput
+          v-if="editorsStatus.text"
+          :closeTextEditor="closeTextEditor"
+          :saveTextEditor="saveTextEditor"
+          :crossData="crossData"
+          :crossId="crossId"
+        />
         <VideoInput
           v-if="editorsStatus.video"
           :closeVideoEditor="closeVideoEditor"
           :saveVideoEditor="saveVideoEditor"
+          :crossData="crossData"
+          :crossId="crossId"
         />
         <PhotoInput
           v-if="editorsStatus.photo"
           :closePhotoEditor="closePhotoEditor"
           :savePhotoEditor="savePhotoEditor"
+          :crossData="crossData"
+          :crossId="crossId"
         />
       </div>
 
@@ -222,57 +233,64 @@
       </div>
     </div>
 
-    <div class="preview-page" v-else>
-      <v-button custom-type="text" custom-style="secondary" @click="previewToggle" style="margin-bottom: 40px;">
-        <div style="display: flex; align-items: center">
-          <v-icon src="back" style="fill: #1D2228; margin-right: 10px;"></v-icon>
-          <span class="bottom__inner" style="color: #1D2228">Назад к настройкам обучения</span>
-        </div>
-      </v-button>
-      <h2 class="preview-page-header">{{ lessonData.lessonName }}</h2>
-
-      <template v-for="(block, id) in lessonData.lessonsBlocks">
-        <div v-if="block.type === 'text'" class="preview-page-block" :key="id">
-          <div v-html="block.data"></div>
-        </div>
-
-        <div v-else-if="block.type === 'video'" class="preview-page-block" :key="id">
-          <div class="preview-page-video">
-            <div class="preview-page-video-header">{{ block.data.header }}</div>
-            <video :poster="block.data.urlPhoto" :src="block.data.urlVideo" controls class="preview-page-video-video" />
+    <div class="container__big" v-else>
+      <div class="preview-page">
+        <v-button custom-type="text" custom-style="secondary" @click="previewToggle" style="margin-bottom: 40px;">
+          <div style="display: flex; align-items: center">
+            <v-icon src="back" style="fill: #1D2228; margin-right: 10px;"></v-icon>
+            <span class="bottom__inner" style="color: #1D2228">Назад к настройкам обучения</span>
           </div>
-        </div>
+        </v-button>
+        <h2 class="preview-page-header">{{ lessonData.lessonName }}</h2>
 
-        <div v-else-if="block.type === 'photo'" class="preview-page-block" :key="id">
-          <div class="preview-page-video">
-            <img v-show="block.data.urlPhoto" :src="block.data.urlPhoto" alt="" :style="calcStyle(block.data.size)" />
+        <template v-for="(block, id) in lessonData.lessonsBlocks">
+          <div v-if="block.type === 'text'" class="preview-page-block" :key="id">
+            <div v-html="block.data"></div>
           </div>
+
+          <div v-else-if="block.type === 'video'" class="preview-page-block" :key="id">
+            <div class="preview-page-video">
+              <div class="preview-page-video-header">{{ block.data.header }}</div>
+              <video
+                :poster="block.data.urlPhoto"
+                :src="block.data.urlVideo"
+                controls
+                class="preview-page-video-video"
+              />
+            </div>
+          </div>
+
+          <div v-else-if="block.type === 'photo'" class="preview-page-block" :key="id">
+            <div class="preview-page-video">
+              <img v-show="block.data.urlPhoto" :src="block.data.urlPhoto" alt="" :style="calcStyle(block.data.size)" />
+            </div>
+          </div>
+        </template>
+
+        <div class="preview-page-bottom-block" v-if="lessonData.endData.endType === 'button'">
+          <v-button style="height: 48px;" class="desktop">
+            {{ lessonData.endData.buttonText ? lessonData.endData.buttonText : "Кнопка завершения урока" }}
+          </v-button>
         </div>
-      </template>
+        <div class="preview-page-bottom-block" v-if="lessonData.endData.endType === 'key'">
+          <v-input
+            name="telegram.login"
+            title="Название урока"
+            rules="required"
+            v-model="lessonData.endData.keyWord"
+            counter
+            :max="10"
+          />
 
-      <div class="preview-page-bottom-block" v-if="lessonData.endData.endType === 'button'">
-        <v-button style="height: 48px;" class="desktop">
-          {{ lessonData.endData.buttonText ? lessonData.endData.buttonText : "Кнопка завершения урока" }}
-        </v-button>
-      </div>
-      <div class="preview-page-bottom-block" v-if="lessonData.endData.endType === 'key'">
-        <v-input
-          name="telegram.login"
-          title="Название урока"
-          rules="required"
-          v-model="lessonData.endData.keyWord"
-          counter
-          :max="10"
-        />
-
-        <v-button style="height: 40px; margin-left: 8px; padding: 10px 32px" class="desktop">
-          Завершить
-        </v-button>
-      </div>
-      <div class="preview-page-bottom-block" v-if="lessonData.endData.endType === 'test'">
-        <v-button style="height: 48px;" class="desktop">
-          Пройти тест
-        </v-button>
+          <v-button style="height: 40px; margin-left: 8px; padding: 10px 32px" class="desktop">
+            Завершить
+          </v-button>
+        </div>
+        <div class="preview-page-bottom-block" v-if="lessonData.endData.endType === 'test'">
+          <v-button style="height: 48px;" class="desktop">
+            Пройти тест
+          </v-button>
+        </div>
       </div>
     </div>
   </div>
@@ -290,8 +308,11 @@ export default {
     toggleHeaderStatus: Function,
     lessonToggle: Function,
     callBackLesson: Function,
+    editCallBackLesson: Function,
     activeSectionId: Number,
-    activeLessonId: Number
+    activeLessonId: Number,
+    crossLessonId: String,
+    crossLessonData: Object
   },
   data() {
     return {
@@ -322,10 +343,40 @@ export default {
           keyWord: "",
           buttonText: ""
         }
-      }
+      },
+      crossData: null,
+      crossId: null
     };
   },
+  mounted() {
+    if (this.crossLessonData) {
+      this.lessonData = { ...this.crossLessonData };
+    } else {
+      this.lessonData = {
+        lessonName: "",
+        lessonsBlocks: [],
+        endData: {
+          endType: "button",
+          testData: [
+            {
+              test: "",
+              answer: ""
+            }
+          ],
+          keyWord: "",
+          buttonText: ""
+        }
+      };
+    }
+  },
   methods: {
+    cancelEditing() {
+      if (this.crossLessonId) {
+        this.editCallBackLesson(this.crossLessonId, this.lessonData);
+      } else {
+        this.callBackLesson(this.activeSectionId, this.activeLessonId, this.lessonData);
+      }
+    },
     triggerUploadVideo() {
       this.openModal("UploadVideo")
         .then(data => {
@@ -355,6 +406,17 @@ export default {
         answer: ""
       });
     },
+    editById(id, type, data) {
+      this.crossData = data;
+      this.crossId = id;
+      if (type === "text") {
+        this.editorsStatus.text = true;
+      } else if (type === "video") {
+        this.editorsStatus.video = true;
+      } else if (type === "photo") {
+        this.editorsStatus.photo = true;
+      }
+    },
     deleteById(id) {
       this.lessonData.lessonsBlocks.splice(id, 1);
     },
@@ -374,35 +436,51 @@ export default {
     },
     closeTextEditor() {
       this.editorsStatus.text = false;
+      this.crossId = null;
+      this.crossData = null;
     },
     closeVideoEditor() {
       this.editorsStatus.video = false;
+      this.crossId = null;
+      this.crossData = null;
     },
     closePhotoEditor() {
       this.editorsStatus.photo = false;
+      this.crossId = null;
+      this.crossData = null;
     },
-    saveTextEditor(val) {
-      this.lessonData.lessonsBlocks.push({
-        type: "text",
-        data: val
-      });
-      this.editorsStatus.text = false;
+    saveTextEditor(val, id) {
+      if (typeof id === "number") {
+        this.lessonData.lessonsBlocks[id].data = val;
+      } else {
+        this.lessonData.lessonsBlocks.push({
+          type: "text",
+          data: val
+        });
+      }
+      this.closeTextEditor();
     },
-    saveVideoEditor(val) {
-      console.log(val);
-      this.lessonData.lessonsBlocks.push({
-        type: "video",
-        data: val
-      });
-      this.editorsStatus.video = false;
+    saveVideoEditor(val, id) {
+      if (typeof id === "number") {
+        this.lessonData.lessonsBlocks[id].data = val;
+      } else {
+        this.lessonData.lessonsBlocks.push({
+          type: "video",
+          data: val
+        });
+      }
+      this.closeVideoEditor();
     },
-    savePhotoEditor(val) {
-      console.log(val);
-      this.lessonData.lessonsBlocks.push({
-        type: "photo",
-        data: val
-      });
-      this.editorsStatus.photo = false;
+    savePhotoEditor(val, id) {
+      if (typeof id === "number") {
+        this.lessonData.lessonsBlocks[id].data = val;
+      } else {
+        this.lessonData.lessonsBlocks.push({
+          type: "photo",
+          data: val
+        });
+      }
+      this.closePhotoEditor();
     }
   },
   components: {
@@ -417,6 +495,13 @@ export default {
 <style lang="scss">
 #LessonBlock {
   margin-bottom: 28px;
+
+  @media (max-width: 630px) {
+    video,
+    img {
+      width: 100% !important;
+    }
+  }
   .edit-page {
     width: 604px;
     .section {
@@ -434,6 +519,14 @@ export default {
       height: 24px;
       align-items: center;
       margin-bottom: 10px;
+      @media (max-width: 630px) {
+        padding: 0 8px;
+      }
+      svg,
+      use,
+      path {
+        fill: #8e99ab;
+      }
       .header-left {
         display: flex;
         align-items: center;
@@ -452,6 +545,9 @@ export default {
       font-size: 14px;
       line-height: 14px;
       border-top: 1px solid #ebeff5;
+      @media (max-width: 630px) {
+        padding: 20px 8px;
+      }
       .section-header {
         padding: 0;
         .header-right {
@@ -506,6 +602,10 @@ export default {
       margin-bottom: 24px;
       display: flex;
       justify-content: space-between;
+
+      @media (max-width: 630px) {
+        margin: 0 8px;
+      }
       .form-group:first-child {
         width: 100%;
       }
@@ -513,6 +613,11 @@ export default {
     .section-footer {
       margin: 0 18px;
       margin-bottom: 28px;
+
+      @media (max-width: 630px) {
+        margin: 0 8px;
+        margin-bottom: 28px;
+      }
       .radio-checker-box {
         .list {
           display: flex;
@@ -557,51 +662,6 @@ export default {
         min-height: 136px;
         max-height: 136px;
       }
-    }
-  }
-
-  .preview-page {
-    width: 80%;
-    margin: 0 auto;
-    &-bottom-block {
-      display: flex;
-      align-items: flex-end;
-    }
-    &-header {
-      margin-bottom: 22px;
-      font-family: "Roboto", sans-serif;
-      font-weight: 500;
-      font-size: 44px;
-      line-height: 44px;
-      color: #1d2228;
-    }
-    .preview-page-block {
-      margin-bottom: 64px;
-      p,
-      li {
-        margin-bottom: 5px;
-        font-family: "Roboto", sans-serif;
-        font-size: 20px;
-        line-height: 32px;
-        color: #1d2228;
-      }
-    }
-    .preview-page-video {
-      &-header {
-        font-family: "Roboto", sans-serif;
-        font-weight: bold;
-        font-size: 28px;
-        line-height: 40px;
-        color: #1d2228;
-        margin-bottom: 24px;
-      }
-      &-video {
-        width: 100%;
-      }
-    }
-    video,
-    img {
-      border-radius: 8px;
     }
   }
 }

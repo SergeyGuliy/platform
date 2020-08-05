@@ -4,7 +4,7 @@
       <div class="create-exit-box__view">
         <img src="../../assets/exit-modal.svg" alt="" />
       </div>
-      <div class="create-exit-box__title">Вы хотите завершить создание обучения?</div>
+      <div class="create-exit-box__title">Вы уверены что хотите удалить секцию?</div>
       <div class="create-exit-box__caption">Все загруженные файлы и данные не будут сохранены</div>
       <div class="create-exit-box__actions">
         <div class="create-exit-box__action">
