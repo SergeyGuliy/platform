@@ -6,7 +6,7 @@ import { learningRoutes } from "../updated/modules/learning/learning-router";
 import { educationRoutes } from "../updated/modules/education/services/routes/education-router";
 
 let routes = [
-  { path: "", redirect: { name: "educationNewPlatform" } },
+  { path: "", redirect: { name: "educationMyCourses" } },
 
   ...require("../routes/main").default,
   ...require("../routes/profile").default,

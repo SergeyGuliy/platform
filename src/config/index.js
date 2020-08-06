@@ -6,3 +6,4 @@ import "./components";
 import "./notification";
 import "./portal-vue";
 import "./vee-validate";
+import "./clipboard";

@@ -7,7 +7,7 @@
             <div class="learn-course__back">
               <button @click.prevent="$router.push({ name: educationAllCourses })">
                 <v-icon src="arrow-back" />
-                Все курсы
+                Все курс11ы
               </button>
             </div>
           </div>

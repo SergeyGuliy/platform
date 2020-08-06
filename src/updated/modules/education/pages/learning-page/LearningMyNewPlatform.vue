@@ -1,5 +1,5 @@
 <template>
-  <div id="LearningNewPlatform">
+  <div id="LearningMyNewPlatform">
     <div class="learning-box" v-if="headerIsVisible && !previewData">
       <div class="learning-box__body">
         <div class="learning-box__body-head-wrapper">
@@ -31,7 +31,7 @@
         <v-icon class="icon" src="close"></v-icon>
       </div>
     </div>
-    <div class="block LearningNewPlatformMain" v-if="!previewData">
+    <div class="block LearningMyNewPlatformMain" v-if="!previewData">
       <div class="header_block container__small">
         <div class="header_block-section" v-if="!lessonIsOpen">Секций ({{ sectionsList.length }}); Уроков (98)</div>
       </div>
@@ -207,7 +207,7 @@
 import LessonBlock from "../../components/paltform-new/LessonBlock";
 import VButton from "../../../../common/components/VButton";
 export default {
-  name: "LearningNewPlatform",
+  name: "LearningMyNewPlatform",
   components: {
     LessonBlock,
     VButton
@@ -399,7 +399,7 @@ export default {
 <style lang="scss">
 /*Не подключал шрифты потому что у меня большое подозрениее что в части проэкта которая у меня отсутствует они подключены.*/
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
-#LearningNewPlatform {
+#LearningMyNewPlatform {
   @media (max-width: 630px) {
     margin-top: 56px;
   }
@@ -674,7 +674,7 @@ export default {
       margin-right: 24px;
     }
   }
-  .LearningNewPlatformMain {
+  .LearningMyNewPlatformMain {
     height: 100%;
     .header_block {
       margin-bottom: 20px;

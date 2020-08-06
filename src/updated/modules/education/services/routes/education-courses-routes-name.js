@@ -7,7 +7,9 @@ export const educationCategory = "educationCategory",
   educationTeam = "educationTeam",
   educationPlatform = "educationPlatform",
   educationNewPlatform = "educationNewPlatform",
-  educationAllCourses = "educationAllCourses";
+  educationNewPlatformSettings = "educationNewPlatformSettings",
+  educationAllCourses = "educationAllCourses",
+  educationMyCourses = "educationMyCourses";
 
 export const courseResource = "courseResource",
   courseLearningPlan = "courseLearningPlan",

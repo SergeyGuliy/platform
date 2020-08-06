@@ -2,7 +2,10 @@
   <div class="learning-box">
     <div class="learning-box__body">
       <div class="learning-box__body-head-wrapper">
-        <div class="learning-box__body-head" v-if="$route.name !== 'educationNewPlatform'">
+        <div
+          class="learning-box__body-head"
+          v-if="$route.name !== 'educationNewPlatform' && $route.name !== 'educationNewPlatformSettings'"
+        >
           <div class="learning-box__body-head-title">Обучение</div>
           <div class="platform-tabs-wrapper">
             <v-tabs :options="tabs" type="mobile" v-model="tab" @click="actionHandler" />
@@ -18,7 +21,8 @@
 import {
   educationAllCourses,
   educationTeam,
-  educationPlatform
+  educationPlatform,
+  educationMyCourses
 } from "../../services/routes/education-courses-routes-name";
 import { preloaderDirective } from "../../../../directives/preloader";
 
@@ -35,6 +39,7 @@ export default {
       tabs: [
         { label: "Платформа", value: educationPlatform },
         { label: "Командные", value: educationTeam },
+        { label: "Мое обучение", value: educationMyCourses },
         { label: "Все курсы", value: educationAllCourses }
       ]
     };
