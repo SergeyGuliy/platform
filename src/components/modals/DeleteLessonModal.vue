@@ -7,7 +7,7 @@
       <div class="create-exit-box__title">Вы уверены что хотите удалить урок?</div>
       <div class="create-exit-box__caption">Все загруженные файлы и данные не будут сохранены</div>
       <div class="create-exit-box__actions">
-        <div class="create-exit-box__action">
+        <div class="create-exit-box__action close">
           <v-btn @click="close()" type="button" clear>Отменить</v-btn>
         </div>
         <div class="create-exit-box__action">
@@ -27,4 +27,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss"></style>
