@@ -39,11 +39,11 @@
                 <v-icon src="drag" />
                 <div class="title">Текст</div>
               </div>
-              <div class="header-right">
+              <div class="header-right" style="cursor: pointer">
                 <div @click="editBlockById(id, block.type, block.data)">
                   <v-icon src="edit" style="margin-right: 16px" />
                 </div>
-                <div @click="deleteBlockById(id)">
+                <div @click="deleteBlockById(id)" style="cursor: pointer">
                   <v-icon src="delete" />
                 </div>
               </div>

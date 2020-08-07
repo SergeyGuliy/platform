@@ -27,12 +27,12 @@
           <div v-for="(section, id) in sectionsList" :key="id">
             <div class="sectionBlock">
               <div class="section-header">
-                <div class="header-left">
+                <div class="header-left" style="cursor: grab">
                   <v-icon src="drag" />
                   <div class="title">Секция {{ id + 1 }}</div>
                 </div>
                 <div class="header-right">
-                  <div @click="deleteSection(id)">
+                  <div @click="deleteSection(id)" style="cursor: pointer">
                     <v-icon src="delete" />
                   </div>
                 </div>
@@ -58,7 +58,7 @@
                 <div class="lessons" v-for="(lesson, lessonId) in section.lessonList" :key="lessonId">
                   <div class="section-header">
                     <div class="header-left">
-                      <v-icon src="drag" />
+                      <v-icon src="drag" style="cursor: grab" />
                       <div class="title-block">
                         <div class="title">Урок {{ lessonId + 1 }}: {{ lesson.lessonName }}</div>
                         <div class="bottom-title">
