@@ -4,14 +4,13 @@
       <div class="learn-course__header">
         <div class="learn-course__header-text-title" v-if="headerData.title">
           {{ headerData.title }}
-          <span>
+          <span @click="$router.push({ name: 'educationNewPlatformMainInfo' })">
             <v-icon src="edit"></v-icon>
           </span>
         </div>
         <div class="learn-course__header-text-wrapper">
           <div class="learn-course__header-text">
             <div class="learn-course__header-text-subtitle" v-html="headerData.subTitle"></div>
-            <course-info-labels v-if="headerData.topicData" :topic-data="headerData.topicData" />
             <div class="learn-course__header-text-start">
               <v-button class="desktop" @click="$router.push({ name: 'educationNewPlatform' })">
                 {{ headerData.buttonText }}

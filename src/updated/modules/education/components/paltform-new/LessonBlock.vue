@@ -1,6 +1,6 @@
 <template>
   <div id="LessonBlock">
-    <div class="edit-page container__small" v-if="!showPreview">
+    <div class="edit-page container__small">
       <div class="header_block-forward" style="margin-bottom: 20px;">
         <v-button custom-type="text" custom-style="secondary" @click="cancelEditing">
           <div style="display: flex; align-items: center">
@@ -8,7 +8,7 @@
             <span class="bottom__inner" style="color: #1D2228">Стартовый блок</span>
           </div>
         </v-button>
-        <v-button custom-type="text" custom-style="primary" @click="previewToggle()">
+        <v-button custom-type="text" custom-style="primary" @click="showPreview(lessonData)">
           <div style="display: flex; align-items: center">
             <v-icon src="eye" style="fill: #ffc107; margin-right: 10px;"></v-icon>
             <span class="bottom__inner">Предпросмотр урока</span>
@@ -19,9 +19,6 @@
         <div class="section-header">
           <div class="header-left">
             <div class="title">Урок 1</div>
-          </div>
-          <div class="header-right">
-            <v-icon src="delete" />
           </div>
         </div>
         <div class="section-body">
@@ -43,10 +40,10 @@
                 <div class="title">Текст</div>
               </div>
               <div class="header-right">
-                <div @click="editById(id, block.type, block.data)">
+                <div @click="editBlockById(id, block.type, block.data)">
                   <v-icon src="edit" style="margin-right: 16px" />
                 </div>
-                <div @click="deleteById(id)">
+                <div @click="deleteBlockById(id)">
                   <v-icon src="delete" />
                 </div>
               </div>
@@ -61,11 +58,11 @@
                 <div class="title">Видео</div>
               </div>
               <div class="header-right">
-                <div @click="editById(id, block.type, block.data)">
+                <div @click="editBlockById(id, block.type, block.data)">
                   <v-icon src="edit" style="margin-right: 16px" />
                 </div>
 
-                <div @click="deleteById(id)">
+                <div @click="deleteBlockById(id)">
                   <v-icon src="delete" />
                 </div>
               </div>
@@ -86,10 +83,10 @@
                 <div class="title">Картинка</div>
               </div>
               <div class="header-right">
-                <div @click="editById(id, block.type, block.data)">
+                <div @click="editBlockById(id, block.type, block.data)">
                   <v-icon src="edit" style="margin-right: 16px" />
                 </div>
-                <div @click="deleteById(id)">
+                <div @click="deleteBlockById(id)">
                   <v-icon src="delete" />
                 </div>
               </div>
@@ -232,83 +229,20 @@
         </v-button>
       </div>
     </div>
-
-    <div class="container__big" v-else>
-      <div class="preview-page">
-        <v-button custom-type="text" custom-style="secondary" @click="previewToggle" style="margin-bottom: 40px;">
-          <div style="display: flex; align-items: center">
-            <v-icon src="back" style="fill: #1D2228; margin-right: 10px;"></v-icon>
-            <span class="bottom__inner" style="color: #1D2228">Назад к настройкам обучения</span>
-          </div>
-        </v-button>
-        <h2 class="preview-page-header">{{ lessonData.lessonName }}</h2>
-
-        <template v-for="(block, id) in lessonData.lessonsBlocks">
-          <div v-if="block.type === 'text'" class="preview-page-block" :key="id">
-            <div v-html="block.data"></div>
-          </div>
-
-          <div v-else-if="block.type === 'video'" class="preview-page-block" :key="id">
-            <div class="preview-page-video">
-              <div class="preview-page-video-header">{{ block.data.header }}</div>
-              <video
-                :poster="block.data.urlPhoto"
-                :src="block.data.urlVideo"
-                controls
-                class="preview-page-video-video"
-              />
-            </div>
-          </div>
-
-          <div v-else-if="block.type === 'photo'" class="preview-page-block" :key="id">
-            <div class="preview-page-video">
-              <img v-show="block.data.urlPhoto" :src="block.data.urlPhoto" alt="" :style="calcStyle(block.data.size)" />
-            </div>
-          </div>
-        </template>
-
-        <div class="preview-page-bottom-block" v-if="lessonData.endData.endType === 'button'">
-          <v-button style="height: 48px;" class="desktop">
-            {{ lessonData.endData.buttonText ? lessonData.endData.buttonText : "Кнопка завершения урока" }}
-          </v-button>
-        </div>
-        <div class="preview-page-bottom-block" v-if="lessonData.endData.endType === 'key'">
-          <v-input
-            name="telegram.login"
-            title="Название урока"
-            rules="required"
-            v-model="lessonData.endData.keyWord"
-            counter
-            :max="10"
-          />
-
-          <v-button style="height: 40px; margin-left: 8px; padding: 10px 32px" class="desktop">
-            Завершить
-          </v-button>
-        </div>
-        <div class="preview-page-bottom-block" v-if="lessonData.endData.endType === 'test'">
-          <v-button style="height: 48px;" class="desktop">
-            Пройти тест
-          </v-button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
 import VButton from "../../../../common/components/VButton";
-import TextInput from "./components/TextInput";
-import VideoInput from "./components/VideoInput";
-import PhotoInput from "./components/PhotoInput";
+import TextInput from "./TextInput";
+import VideoInput from "./VideoInput";
+import PhotoInput from "./PhotoInput";
 
 export default {
   name: "LessonBlock",
   props: {
-    toggleHeaderStatus: Function,
-    lessonToggle: Function,
-    callBackLesson: Function,
-    editCallBackLesson: Function,
+    createLesson: Function,
+    editLesson: Function,
     activeSectionId: Number,
     activeLessonId: Number,
     crossLessonId: String,
@@ -316,7 +250,6 @@ export default {
   },
   data() {
     return {
-      showPreview: false,
       showButtonRadio: false,
       lessonIsOpen: false,
       editorsStatus: {
@@ -370,11 +303,15 @@ export default {
     }
   },
   methods: {
+    showPreview(data) {
+      this.$store.commit("general/SET_PREVIEW_DATA", data);
+      this.$router.push({ name: "educationNewPlatformPreview" });
+    },
     cancelEditing() {
       if (this.crossLessonId) {
-        this.editCallBackLesson(this.crossLessonId, this.lessonData);
+        this.editLesson(this.crossLessonId, this.lessonData);
       } else {
-        this.callBackLesson(this.activeSectionId, this.activeLessonId, this.lessonData);
+        this.createLesson(this.activeSectionId, this.activeLessonId, this.lessonData);
       }
     },
     triggerUploadVideo() {
@@ -394,11 +331,6 @@ export default {
         .catch(e => {
           console.log(e);
         });
-      // this.editorsStatus.video = true
-    },
-    previewToggle() {
-      this.showPreview = !this.showPreview;
-      this.toggleHeaderStatus();
     },
     addTestData() {
       this.lessonData.endData.testData.push({
@@ -406,7 +338,7 @@ export default {
         answer: ""
       });
     },
-    editById(id, type, data) {
+    editBlockById(id, type, data) {
       this.crossData = data;
       this.crossId = id;
       if (type === "text") {
@@ -417,7 +349,7 @@ export default {
         this.editorsStatus.photo = true;
       }
     },
-    deleteById(id) {
+    deleteBlockById(id) {
       this.lessonData.lessonsBlocks.splice(id, 1);
     },
     calcStyle(size) {

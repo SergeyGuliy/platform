@@ -1,10 +1,15 @@
 <template>
-  <div class="learning-box">
+  <div class="learning-box" id="Learning">
     <div class="learning-box__body">
       <div class="learning-box__body-head-wrapper">
         <div
           class="learning-box__body-head"
-          v-if="$route.name !== 'educationNewPlatform' && $route.name !== 'educationNewPlatformSettings'"
+          v-if="
+            $route.name !== 'educationNewPlatform' &&
+              $route.name !== 'educationNewPlatformSettings' &&
+              $route.name !== 'educationNewPlatformMainInfo' &&
+              $route.name !== 'educationNewPlatformPreview'
+          "
         >
           <div class="learning-box__body-head-title">Обучение</div>
           <div class="platform-tabs-wrapper">
@@ -53,6 +58,13 @@ export default {
 </script>
 
 <style lang="scss">
+#Learning {
+  .learning-box__body-head-title {
+    @media (max-width: 740px) {
+      display: none;
+    }
+  }
+}
 .learning-box__body-head > div {
   display: flex;
   justify-content: space-between;

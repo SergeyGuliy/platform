@@ -12,7 +12,7 @@
 <script>
 import { richEditorOptionPrimary } from "@/updated/common/constants/rich-editor-options";
 
-import Editor from "../../../../../common/components/Editor";
+import Editor from "../../../../common/components/Editor";
 export default {
   name: "TextInput",
   data() {

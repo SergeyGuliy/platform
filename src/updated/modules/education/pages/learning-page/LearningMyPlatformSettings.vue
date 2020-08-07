@@ -1,108 +1,49 @@
 <template>
   <div class="builder-tabs-block block" id="LearningMyPlatformSettings">
+    <div class="small-fixed-top">
+      <div class="title">
+        Настройка доступа
+
+        <div class="tooltip__bottom">
+          <v-icon src="info" />
+          <div class="tooltiptext">
+            Здесь вы можете настроить параметры зависимости между уроками и секциями.
+            <br />
+            <br />
+            Например: позволить пользователям просматривать “Урок 2”, если они пересмотрели “Урок 1”
+          </div>
+        </div>
+      </div>
+      <div @click="$router.back()" style="cursor: pointer">
+        <v-icon class="icon" src="close"></v-icon>
+      </div>
+    </div>
     <div class="learning-box" id="header">
       <div class="learning-box__body">
         <div class="learning-box__body-head-wrapper">
           <div class="learning-box__body-head">
             <div style="margin-bottom: 10px">
-              <div class="learning-box__body-head-title">{{ getHeader }}</div>
+              <div class="learning-box__body-head-title">Настройка доступа</div>
               <div class="left-buttons">
-                <v-button style="height: 48px;" class="desktop" custom-type="text" custom-style="primary">
+                <v-button
+                  style="height: 48px;"
+                  class="desktop"
+                  custom-type="text"
+                  custom-style="primary"
+                  @click="endCreation"
+                >
                   Отменить
                 </v-button>
-                <v-button style="height: 48px;" class="desktop">
+                <v-button style="height: 48px;" class="desktop" @click="submitCreation">
                   Сохранить
                 </v-button>
               </div>
             </div>
           </div>
         </div>
-        <div class="platform-tabs-wrapper" v-if="tab === 'learningPlan'">
-          <v-tabs :options="tabs" type="mobile" v-model="tab" />
-        </div>
       </div>
     </div>
-    <div id="learningPlan" v-if="tab === 'learningPlan'">
-      <div class="header_block-forward" style="margin-bottom: 20px;">
-        <v-button custom-type="text" custom-style="secondary">
-          <div style="display: flex; align-items: center">
-            <v-icon src="back" style="fill: #1D2228; font-size: 25px; margin-right: 10px;"></v-icon>
-            <span class="bottom__inner" style="color: #1D2228">Стартовый блок</span>
-          </div>
-        </v-button>
-        <v-button custom-type="text" custom-style="primary">
-          <div style="display: flex; align-items: center">
-            <v-icon src="eye" style="fill: #ffc107; font-size: 25px; margin-right: 10px;"></v-icon>
-            <span class="bottom__inner">Предпросмотр урока</span>
-          </div>
-        </v-button>
-      </div>
-      <div class="section-footer">
-        <v-radio
-          name="cancel"
-          :options="types"
-          rules="required"
-          v-model="lessonData.endData.endType"
-          title="Завершение урока через:"
-        />
-
-        <v-input
-          v-if="lessonData.endData.endType === 'button'"
-          style="margin-top: 16px; width: 50%"
-          name="telegram.login"
-          title="Введите текст кнопки"
-          rules="required"
-          placeholder="Пример: Выполнено"
-          v-model="lessonData.endData.buttonText"
-          counter
-          :max="14"
-        />
-        <v-input
-          v-if="lessonData.endData.endType === 'key'"
-          style="margin-top: 16px; width: 50%"
-          name="telegram.login"
-          title="Введите ключевое слово"
-          rules="required"
-          v-model="lessonData.endData.keyWord"
-          counter
-          :max="10"
-        />
-      </div>
-      <div class="section-test-card" v-if="lessonData.endData.endType === 'test'">
-        <div class="test-header">Тест к Уроку 1</div>
-        <template v-for="(item, id) in lessonData.endData.testData">
-          <div :key="id">
-            <v-input
-              style="margin-top: 10px; margin-bottom: 16px"
-              name="telegram.login"
-              title="Название теста"
-              rules="required"
-              placeholder="Пример: Выполнено"
-              v-model="lessonData.endData.testData[id].test"
-              counter
-              :max="14"
-            />
-            <v-textarea
-              style="margin-top: 16px; margin-bottom: 20px"
-              title="Описание"
-              name="text"
-              rules="required"
-              v-model="lessonData.endData.testData[id].answer"
-              counter
-              :max="200"
-            />
-          </div>
-        </template>
-
-        <v-button custom-type="text" custom-style="primary" @click="addTestData">
-          <div style="display: flex; align-items: center">
-            <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
-            <span class="bottom__inner">Добавить вопрос</span>
-          </div>
-        </v-button>
-      </div>
-    </div>
-    <div id="accessSettings" v-if="tab === 'accessSettings'">
+    <div id="accessSettings">
       <p>
         Здесь вы можете настроить параметры зависимости между уроками и секциями. <br />
         Например: позволить пользователям просматривать “Урок 2”, если они пересмотрели “Урок 1
@@ -124,144 +65,112 @@
               Секция {{ sectionId + 1 }}
             </div>
           </div>
-          <div class="section-head-right" v-if="sectionOpenedId !== sectionId">
-            <div class="radio active">
+          <div class="section-head-right " v-if="sectionOpenedId !== sectionId">
+            <div
+              class="radio tooltip"
+              :class="section.isActive ? 'active' : ''"
+              @click="section.isActive = !section.isActive"
+            >
               <div class="radio__inner" />
+              <span class="tooltiptext">Выключить доступ к уроку</span>
             </div>
-            <div class="">
+            <div class="tooltip" @click="copyLink(section.link)">
               <v-icon src="link" style="font-size: 24px; fill: #8E99AB;"></v-icon>
+              <span class="tooltiptext">Поделиться уроком</span>
             </div>
           </div>
         </div>
         <div class="section-body" :class="sectionOpenedId === sectionId ? '' : 'hiden'">
           <div class="section-body-container">
             <div class="left">
-              <div class="section">{{ section.sectionName }}</div>
+              <div class="section-title">{{ section.sectionName }}</div>
               <div
                 class="dropdown"
-                @click="dropdownSelected = '1'"
-                :class="dropdownSelected === '1' ? '' : 'disactive'"
-                v-click-outside="(dropdownSelected = null)"
+                @click.stop="setDropdown(`section-${sectionId}`)"
+                :class="dropdownSelected === `section-${sectionId}` ? '' : 'disactive'"
+                v-click-outside="cleanDropdown"
               >
-                <span>{{ itemsSelected.join(", ") }}</span>
-                <!--                <div class="dropdown__inner">-->
-                <!--                  <div class="item" v-for="(item, id) in items" :key="id">-->
-                <!--                    <div class="item-checkbox">-->
-                <!--                      <div class="item-checkbox-inner" >-->
-                <!--                        <v-icon src="arrow-down" />-->
-                <!--                      </div>-->
-                <!--                    </div>-->
-                <!--                    <div class="item-text">{{item.label}}</div>-->
-                <!--                  </div>-->
-                <!--                </div>-->
+                <span>{{ section.accessList.join(", ") }}</span>
+                <v-icon src="arrow-down"></v-icon>
+                <div class="dropdown__inner">
+                  <div
+                    class="item"
+                    v-for="(item, id) in calculateSections(sectionId)"
+                    :key="id"
+                    :class="section.accessList.includes(item.label) ? '' : 'disactive'"
+                    @click="select(section.accessList, item.label)"
+                  >
+                    <div class="item-checkbox">
+                      <div class="item-checkbox-inner">
+                        <v-icon src="arrow-down" />
+                      </div>
+                    </div>
+                    <div class="item-text">{{ item.label }}</div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="right section-head-right">
-              <div class="radio active">
+              <div
+                class="radio tooltip"
+                :class="section.isActive ? 'active' : ''"
+                @click="section.isActive = !section.isActive"
+              >
                 <div class="radio__inner" />
+                <span class="tooltiptext">Выключить доступ к уроку</span>
               </div>
-              <div class="">
+              <div class="tooltip">
                 <v-icon src="link" style="font-size: 24px; fill: #8E99AB;"></v-icon>
+                <span class="tooltiptext" @click="copyLink(section.link)">Поделиться уроком</span>
               </div>
             </div>
           </div>
           <div v-for="(lesson, lessonId) in section.lessonList" :key="lessonId" class="section-body-container">
             <div class="left">
               <div class="lesson">Урок {{ lessonId + 1 }}: {{ lesson.lessonName }}</div>
-            </div>
-            <div class="right section-head-right">
-              <div class="radio active">
+              <div
+                class="dropdown"
+                @click.stop="setDropdown(`${sectionId}-${lessonId}`)"
+                :class="dropdownSelected === `${sectionId}-${lessonId}` ? '' : 'disactive'"
+                v-click-outside="cleanDropdown"
+              >
+                <span>{{ lesson.accessList.join(", ") }}</span>
+                <v-icon src="arrow-down"></v-icon>
+                <div class="dropdown__inner">
+                  <div
+                    class="item"
+                    v-for="(item, id) in calculateLessons(sectionId, lessonId)"
+                    :key="id"
+                    :class="lesson.accessList.includes(item.label) ? '' : 'disactive'"
+                    @click="select(lesson.accessList, item.label)"
+                  >
+                    <div class="item-checkbox">
+                      <div class="item-checkbox-inner">
+                        <v-icon src="arrow-down" />
+                      </div>
+                    </div>
+                    <div class="item-text">{{ item.label }}</div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="radio tooltip"
+                :class="lesson.isActive ? 'active' : ''"
+                @click="lesson.isActive = !lesson.isActive"
+              >
                 <div class="radio__inner" />
+                <span class="tooltiptext">Выключить доступ к уроку</span>
               </div>
-              <div class="">
+              <div class="tooltip" @click="copyLink(lesson.link)">
                 <v-icon src="link" style="font-size: 24px; fill: #8E99AB;"></v-icon>
+                <span class="tooltiptext">Поделиться уроком</span>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div id="mainInfo" v-if="tab === 'mainInfo'">
-      <v-input name="telegram.login" title="Заголовок" rules="required" v-model="formData.title" class="input__field" />
-      <v-textarea
-        name="text"
-        title="Описание"
-        rules="required"
-        v-model="formData.description"
-        class="textarea__field"
-      />
-
-      <div class="title">Промовидео для курса</div>
-      <p>
-        После просмотра качественного промовидео вероятность того, что студенты запишутся на ваш курс, может увеличиться
-        в 5 раз. А при наличии исключительно хороших видео — даже в 10 раз.
-      </p>
-      <div class="block">
-        <div class="left">
-          <v-button custom-type="text" custom-style="primary" @click="uploadVideo" v-if="!formData.video">
-            <div style="display: flex; align-items: center">
-              <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
-              <span class="bottom__inner">Добавить видео</span>
-            </div>
-          </v-button>
-          <div class="file-input" v-else>
-            <div class="lable">Видео {{ formData.video ? `(${converterFileSize(formData.video.size)})` : "" }}</div>
-            <div class="input" :class="formData.video ? 'active' : ''">
-              <div class="file-name">{{ formData.video ? formData.video.name : "" }}</div>
-              <div @click.stop="cleanVideo">
-                <v-icon src="delete" />
-              </div>
-            </div>
-          </div>
-          <v-button custom-type="text" custom-style="primary" @click="uploadPhoto" v-if="!formData.photo">
-            <div style="display: flex; align-items: center">
-              <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
-              <span class="bottom__inner">Добавить обложку видео</span>
-            </div>
-          </v-button>
-          <div class="file-input" v-else>
-            <div class="lable">Оболожка {{ formData.photo ? `(${converterFileSize(formData.photo.size)})` : "" }}</div>
-            <div class="input" :class="formData.photo ? 'active' : ''">
-              <div class="file-name">{{ formData.photo ? formData.photo.name : "" }}</div>
-              <div @click="cleanPhoto">
-                <v-icon src="delete" />
-              </div>
-            </div>
-          </div>
-
-          <input
-            type="file"
-            accept="video/*"
-            style="display: none"
-            id="selectVideo"
-            ref="selectVideo"
-            v-on:change="uploadVideoAction"
-          />
-          <input
-            type="file"
-            accept="image/*"
-            style="display: none"
-            id="selectPhoto"
-            ref="selectPhoto"
-            v-on:change="uploadPhotoAction"
-          />
-        </div>
-        <div class="right">
-          <video
-            v-show="formData.urlVideo || formData.urlPhoto"
-            :poster="formData.urlPhoto"
-            :src="formData.urlVideo"
-            width="240px"
-            controls
-            id="videoBox"
-          />
-          <div class="right-header">
-            {{ formData.video ? formData.video.name : "" }}
-            <div>{{ formData.duration }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <button class="my-button filled save">
+      Сохранить
+    </button>
   </div>
 </template>
 
@@ -275,226 +184,240 @@ export default {
   },
   data() {
     return {
-      formData: {
-        title: null,
-        description: null,
-        video: null,
-        urlVideo: null,
-        photo: null,
-        urlPhoto: null,
-        duration: ""
-      },
       dropdownSelected: null,
       items: [
         {
-          label: "Урок 1",
-          value: "1"
+          label: "Урок 1"
         },
         {
-          label: "Урок 2",
-          value: "2"
+          label: "Урок 2"
         },
         {
-          label: "Урок 3",
-          value: "4"
+          label: "Урок 3"
         }
       ],
-      itemsSelected: ["1"],
-      tab: "mainInfo",
-      tabs: [
-        { label: "Учебный план", value: "learningPlan" },
-        { label: "Настройки доступа", value: "accessSettings" },
-        { label: "Основная информация", value: "mainInfo" }
-      ],
-      types: [
-        { label: "Кнопку", value: "button" },
-        { label: "Ключевое слово", value: "key" },
-        { label: "Тест", value: "test" }
-      ],
+      itemsSelected: [],
       sectionOpenedId: 0,
       sectionsList: [
         {
-          sectionName: "Дефолтный блок",
-          limit: "DT4",
+          sectionName: "Дефолтный секция 1",
+          isActive: false,
+          accessList: [],
+          link: "http://inernet-platform.ru/register/29f",
           lessonList: [
             {
-              lessonName: "Дефолтный урок",
-              lessonsBlocks: [
-                {
-                  type: "text",
-                  data:
-                    "<p>eqwqewqwe qwe qwe qwe qw q wee qw qweq weqew qwe </p><p>qw e eqw qwe ewq eqw qwe eqw</p><p> qew qwe qewq ew qew qewq we</p><p><strong> eqwewq  ewq weq</strong></p><p><strong><u> eqw eqw qew eqw</u></strong></p><ol><li><strong><u>qw e</u></strong></li><li><strong><u> qwe</u></strong></li></ol><ul><li><strong><u> eqw</u></strong></li><li><strong><u> wqe</u></strong></li></ul>"
-                },
-                {
-                  type: "video",
-                  data: {
-                    video: null,
-                    photo: null,
-                    header: null,
-                    urlPhoto: null,
-                    urlVideo: `http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4`
-                  }
-                },
-                {
-                  type: "photo",
-                  data: {
-                    urlPhoto: "https://html5css.ru/css/img_fjords.jpg"
-                  }
-                }
-              ],
-              endData: {
-                endType: "button",
-                testData: [
-                  {
-                    test: "",
-                    answer: ""
-                  }
-                ],
-                keyWord: "",
-                buttonText: "Базовая кнопка"
-              }
+              lessonName: "Дефолтный урок 1-1",
+              accessList: [],
+              isActive: false,
+              link: "http://inernet-platform.ru/register/29f"
+            },
+            {
+              lessonName: "Дефолтный урок 1-2",
+              accessList: [],
+              isActive: false,
+              link: "http://inernet-platform.ru/register/29f"
+            },
+            {
+              lessonName: "Дефолтный урок 1-3",
+              accessList: [],
+              isActive: false,
+              link: "http://inernet-platform.ru/register/29f"
             }
           ]
         },
 
         {
-          sectionName: "Дефолтный блок",
-          limit: "STAR",
+          sectionName: "Дефолтный секция 2",
+          accessList: [],
+          isActive: false,
+          link: "http://inernet-platform.ru/register/29f",
+
           lessonList: [
             {
-              lessonName: "Дефолтный урок",
-              lessonsBlocks: [],
-              endData: {
-                endType: "button",
-                testData: [
-                  {
-                    test: "",
-                    answer: ""
-                  }
-                ],
-                keyWord: "",
-                buttonText: ""
-              }
+              lessonName: "Дефолтный урок 2-1",
+              accessList: [],
+              isActive: false,
+              link: "http://inernet-platform.ru/register/29f"
+            },
+            {
+              lessonName: "Дефолтный урок 2-2",
+              accessList: [],
+              isActive: false,
+              link: "http://inernet-platform.ru/register/29f"
             }
           ]
         }
-      ],
-
-      lessonData: {
-        endData: {
-          endType: "button",
-          testData: [
-            {
-              test: "",
-              answer: ""
-            }
-          ],
-          keyWord: "",
-          buttonText: ""
-        }
-      }
+      ]
     };
   },
-  computed: {
-    getHeader() {
-      if (this.tab === "learningPlan") {
-        return "Настройка комндного обучения";
-      } else if (this.tab === "accessSettings") {
-        return "Настройка доступа";
-      } else {
-        return "Основная информация";
-      }
-    }
-  },
-  watch: {
-    "formData.urlVideo"(val) {
-      if (val) {
-        let vid = document.getElementById("videoBox");
-        let i = setInterval(() => {
-          if (vid.readyState > 0) {
-            let minutes = parseInt(vid.duration / 60, 10);
-            let seconds = vid.duration % 60;
-            seconds = `${seconds}`.split(".")[0];
-            console.log(`${minutes}:${seconds}`);
-            this.formData.duration = `${minutes}:${seconds}`;
-            clearInterval(i);
-          }
-        }, 1);
-      }
-    }
-  },
-
   methods: {
-    cleanPhoto() {
-      if (this.formData.photo) {
-        this.formData.photo = null;
-        this.formData.urlPhoto = null;
+    calculateSections(sectionId) {
+      let sections = [];
+      this.sectionsList.forEach(item => {
+        sections.push({
+          label: item.sectionName
+        });
+      });
+      sections.splice(sectionId, 1);
+      return sections;
+    },
+    calculateLessons(sectionId, lessonId) {
+      let lessons = [];
+      this.sectionsList[sectionId].lessonList.forEach(item => {
+        lessons.push({
+          label: item.lessonName
+        });
+      });
+      lessons.splice(lessonId, 1);
+      return lessons;
+    },
+    setDropdown(type) {
+      this.dropdownSelected = type;
+    },
+    cleanDropdown() {
+      this.dropdownSelected = null;
+    },
+    select(target, inputValue) {
+      if (target.includes(inputValue)) {
+        let id = target.findIndex(id => id === inputValue);
+        target.splice(id, 1);
+      } else {
+        target.push(inputValue);
       }
     },
-    cleanVideo() {
-      if (this.formData.video) {
-        this.formData.video = null;
-        this.formData.urlVideo = null;
-        this.formData.duration = null;
-      }
-    },
-    uploadVideo() {
-      if (this.formData.video) return;
-      document.getElementById("selectVideo").click();
-    },
-    uploadPhoto() {
-      document.getElementById("selectPhoto").click();
-    },
-    async uploadVideoAction(e) {
-      let files = e.target.files || e.dataTransfer.files;
-      if (!files.length) return;
-
-      this.formData.video = files[0];
-      this.formData.urlVideo = await URL.createObjectURL(this.formData.video);
-    },
-    uploadPhotoAction(e) {
-      let files = e.target.files || e.dataTransfer.files;
-      if (!files.length) return;
-
-      this.formData.photo = files[0];
-      this.formData.urlPhoto = URL.createObjectURL(this.formData.photo);
-    },
-    converterFileSize(bytes, dp = 1) {
-      const thresh = 1000;
-      if (Math.abs(bytes) < thresh) {
-        return bytes + " B";
-      }
-      const units = ["KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-      let u = -1;
-      const r = 10 ** dp;
-      do {
-        bytes /= thresh;
-        ++u;
-      } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
-      return bytes.toFixed(dp) + " " + units[u];
-    },
-    addTestData() {
-      this.lessonData.endData.testData.push({
-        test: "",
-        answer: ""
+    endCreation() {
+      this.openModal("Submit").then(() => {
+        this.$router.push("/education/my-platform");
       });
     },
+    submitCreation() {
+      this.$router.push("/education/my-platform");
+    },
     copyLink(val) {
-      console.log(val);
-      this.$copyText(val);
-      this.openModal("Copy", val);
+      this.openModal("Share", val);
     }
   }
 };
 </script>
 <style lang="scss">
 #LearningMyPlatformSettings {
+  @media (max-width: 740px) {
+    margin-top: 65px;
+  }
+  .my-button {
+    outline: none;
+    height: 40px;
+    font-family: "Roboto", sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: #1d2228;
+    padding: 0 10px;
+  }
+  .outlined {
+    background: #ffffff;
+    border: 1px solid #ffc107;
+    border-radius: 6px;
+  }
+  .filled {
+    background: #ffc107;
+    border-radius: 6px;
+  }
+  .save {
+    display: none;
+    @media (max-width: 630px) {
+      display: block;
+      width: 100%;
+      margin: 40px 0;
+      height: 48px !important;
+    }
+  }
+  .small-fixed-top {
+    display: none;
+    @media (max-width: 630px) {
+      background: #ffffff;
+      width: 100%;
+      height: 56px;
+      position: fixed;
+      top: 56px;
+      left: 0;
+      box-shadow: 0px 1px 4px rgba(57, 70, 111, 0.06), 0px 6px 20px rgba(57, 70, 111, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 1;
+      .title {
+        font-family: "Roboto", sans-serif;
+        font-weight: bold;
+        font-size: 18px;
+        line-height: 24px;
+        color: #1d2228;
+        display: flex;
+        align-items: center;
+        div {
+          margin-left: 10px;
+          height: 18px;
+        }
+      }
+      .tooltip__bottom {
+        position: relative;
+        display: inline-block;
+      }
+
+      .tooltip__bottom .tooltiptext {
+        visibility: hidden;
+        width: 340px;
+        height: 145px;
+        background-color: #ffffff;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 1;
+        top: 150%;
+        left: calc(50% - 110px);
+        margin-left: -60px;
+        font-family: "Roboto", sans-serif;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 14px;
+        line-height: 20px;
+        color: #1d2228;
+        padding: 12px 16px;
+      }
+
+      .tooltip__bottom .tooltiptext::after {
+        content: "";
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent transparent #ffffff transparent;
+      }
+
+      .tooltip__bottom:hover .tooltiptext {
+        visibility: visible;
+      }
+      .icon {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .hide-small {
+    @media (max-width: 850px) {
+      display: none !important;
+    }
+  }
   .learning-box__body-head-wrapper {
     padding: 0;
   }
+
   .dropdown {
+    box-sizing: content-box;
     border: 1px solid #ffc107;
-    box-sizing: border-box;
     border-radius: 6px 6px 0 0;
     width: 47%;
     height: 40px;
@@ -502,6 +425,13 @@ export default {
     display: flex;
     align-items: center;
     border-bottom: none;
+    justify-content: space-between;
+    cursor: pointer;
+    background-color: white;
+    @media (max-width: 850px) {
+      flex: 1 1 auto;
+      order: 3;
+    }
     span {
       margin-left: 12px;
       font-family: "Roboto", sans-serif;
@@ -510,10 +440,17 @@ export default {
       line-height: 24px;
       color: #9ca1ab;
     }
+    & > svg {
+      margin-right: 10px;
+      fill: #434a54;
+      transform: rotate(180deg);
+    }
     .dropdown__inner {
-      width: 100%;
+      z-index: 5;
+      width: calc(100% + 2px);
       position: absolute;
       top: 39px;
+      left: -1px;
       padding: 0 19px;
       background-color: #ffffff;
       border: 1px solid #ffc107;
@@ -543,33 +480,72 @@ export default {
           line-height: 24px;
         }
       }
-    }
-  }
-  #header {
-  }
-  #learningPlan {
-    width: 604px;
-    .header_block-forward {
-      display: flex;
-      justify-content: space-between;
-    }
-    .radio-checker-box {
-      .input-box-label {
-        font-family: "Roboto", sans-serif;
-        font-weight: 700;
-        font-size: 12px;
-        line-height: 24px;
-        color: #1d2228;
-        margin-bottom: 8px;
-      }
-      .list {
-        display: flex;
-        li:not(:first-child) {
-          margin-left: 26px;
+      .item.disactive {
+        .item-checkbox {
+          border: 2px solid #8e99ab;
+        }
+        .item-text {
+          color: #8e99ab;
+        }
+        svg {
+          display: none;
         }
       }
     }
   }
+  .dropdown.disactive {
+    border: 1px solid #c8d1e0;
+    border-radius: 6px;
+    & > svg {
+      transform: rotate(0deg);
+    }
+    .dropdown__inner {
+      display: none;
+    }
+  }
+
+  .tooltip {
+    position: relative;
+    cursor: pointer;
+    @media (max-width: 850px) {
+      order: 4;
+      margin-left: 18px;
+    }
+  }
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    padding: 0 8px;
+    width: 168px;
+    height: 34px;
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 110%;
+    font-family: "Roboto", sans-serif;
+    font-size: 12px;
+    line-height: 18px;
+    color: #ffffff;
+  }
+  .tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
+  }
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+
   #accessSettings {
     p {
       width: 630px;
@@ -578,6 +554,10 @@ export default {
       line-height: 24px;
       color: #58606e;
       margin-bottom: 24px;
+
+      @media (max-width: 740px) {
+        width: 100%;
+      }
     }
     .section {
       margin: 24px 0;
@@ -586,6 +566,68 @@ export default {
       box-shadow: 0px 1px 4px rgba(57, 70, 111, 0.06), 0px 6px 20px rgba(57, 70, 111, 0.08);
       border-radius: 8px;
       padding: 0 16px;
+      @media (max-width: 1000px) {
+        width: 700px;
+      }
+      @media (max-width: 740px) {
+        width: 100%;
+        margin-top: 56px;
+      }
+      .radio {
+        margin: 0 26px 0 32px;
+        width: 40px;
+        height: 24px;
+        background: #ebeff5;
+        border-radius: 48px;
+        position: relative;
+        transition: all ease 0.3s;
+        @media (max-width: 850px) {
+          order: 2;
+          margin: 0;
+          margin-left: 18px;
+        }
+        &__inner {
+          transition: all ease 0.3s;
+          position: absolute;
+          left: 2px;
+          top: 1px;
+          width: 22px;
+          height: 22px;
+          background: #ffffff;
+          border-radius: 50%;
+          box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1), 0px 1px 1px rgba(0, 0, 0, 0.01), 0px 3px 1px rgba(0, 0, 0, 0.03);
+        }
+      }
+      .radio.active {
+        background: #ffc107 !important;
+        .radio__inner {
+          left: 16px;
+        }
+      }
+      .title {
+        cursor: pointer;
+        font-family: "Roboto", sans-serif;
+        font-weight: bold;
+        font-size: 16px;
+        line-height: 24px;
+        color: #1d2228;
+        margin-left: 14px;
+      }
+      .arrow {
+        display: flex;
+        align-items: center;
+        svg {
+          font-size: 15px;
+          transform: rotate(180deg);
+          fill: #ffc107;
+        }
+      }
+      .arrow.active {
+        svg {
+          transform: rotate(0deg);
+          fill: #434a54;
+        }
+      }
       &-head {
         height: 72px;
         display: flex;
@@ -594,62 +636,10 @@ export default {
         &-left {
           display: flex;
           align-items: center;
-          .title {
-            cursor: pointer;
-            font-family: "Roboto", sans-serif;
-            font-weight: bold;
-            font-size: 16px;
-            line-height: 24px;
-            color: #1d2228;
-            margin-left: 14px;
-          }
-          .arrow {
-            display: flex;
-            align-items: center;
-            svg {
-              font-size: 15px;
-              transform: rotate(180deg);
-              fill: #ffc107;
-            }
-          }
-          .arrow.active {
-            svg {
-              transform: rotate(0deg);
-              fill: #434a54;
-            }
-          }
         }
         &-right {
           display: flex;
           align-items: center;
-          .radio {
-            margin: 0 26px 0 32px;
-            width: 40px;
-            height: 24px;
-            background: #ebeff5;
-            border-radius: 48px;
-            position: relative;
-            transition: all ease 0.3s;
-            &__inner {
-              transition: all ease 0.3s;
-              position: absolute;
-              left: 2px;
-              top: 1px;
-              width: 22px;
-              height: 22px;
-              background: #ffffff;
-              border-radius: 50%;
-              box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1), 0px 1px 1px rgba(0, 0, 0, 0.01),
-                0px 3px 1px rgba(0, 0, 0, 0.03);
-            }
-          }
-
-          .radio.active {
-            background: #ffc107 !important;
-            .radio__inner {
-              left: 16px;
-            }
-          }
         }
       }
 
@@ -660,12 +650,23 @@ export default {
           display: flex;
           align-items: center;
           justify-content: space-between;
+          @media (max-width: 850px) {
+            height: 126px;
+            align-content: center;
+          }
           .left {
             display: flex;
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            .section {
+            @media (max-width: 850px) {
+              height: 100%;
+              flex-wrap: wrap;
+              align-items: center;
+              justify-content: space-between;
+            }
+            .section-title {
+              padding-left: 10px;
               display: flex;
               align-items: center;
               background: #ebeff5;
@@ -677,6 +678,12 @@ export default {
               font-weight: 700;
               font-size: 14px;
               color: #1d2228;
+              margin-right: 18px;
+              @media (max-width: 850px) {
+                flex: 1 1 auto;
+                order: 1;
+                margin-right: 0px;
+              }
             }
             .lesson {
               font-family: "Roboto", sans-serif;
@@ -685,6 +692,12 @@ export default {
               font-size: 14px;
               line-height: 18px;
               color: #58606e;
+              margin-right: 18px;
+              @media (max-width: 850px) {
+                flex: 1 1 auto;
+                order: 1;
+                margin-right: 0px;
+              }
             }
           }
           .right {
@@ -695,138 +708,6 @@ export default {
         overflow: hidden;
         height: 0px;
         transition: all ease 1s;
-      }
-    }
-  }
-  #mainInfo {
-    width: 604px;
-    .input__field,
-    .textarea__field {
-      margin-bottom: 25px;
-    }
-    .title {
-      font-family: "Roboto", sans-serif;
-      font-weight: 500;
-      font-size: 14px;
-      line-height: 24px;
-      color: #1d2228;
-      margin-bottom: 10px;
-    }
-    p {
-      font-family: "Roboto", sans-serif;
-      font-size: 14px;
-      line-height: 20px;
-      color: #58606e;
-      width: 520px;
-    }
-
-    svg {
-      font-size: 24px;
-      fill: #8e99ab;
-    }
-    .block {
-      margin-top: 24px;
-      display: flex;
-      justify-content: space-between;
-      @media (max-width: 630px) {
-        flex-direction: column;
-        .right {
-          order: 0;
-          video {
-            min-width: 100%;
-          }
-        }
-        .left {
-          width: 100% !important;
-          order: 1;
-        }
-      }
-      .left {
-        width: 336px;
-        margin-right: 32px;
-        .v-button {
-          margin-top: 18px;
-          margin-bottom: 18px;
-        }
-      }
-      .right {
-        flex: 1 1 auto;
-        &-header {
-          font-family: "Roboto", sans-serif;
-          font-weight: 500;
-          font-size: 14px;
-          line-height: 24px;
-          display: flex;
-          align-items: center;
-          color: #1d2228;
-          div {
-            margin-left: 10px;
-            font-family: "Roboto", sans-serif;
-            font-weight: 500;
-            font-size: 12px;
-            line-height: 14px;
-            color: #58606e;
-          }
-        }
-      }
-    }
-    .input-block {
-      display: flex;
-      align-items: flex-end;
-      .form-group {
-        flex: 1 1 auto;
-      }
-      svg {
-        margin: 0 12px;
-        margin-bottom: 7.5px;
-      }
-    }
-    .file-input {
-      position: relative;
-      margin-bottom: 16px;
-      .label {
-        font-family: "Roboto", sans-serif;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 24px;
-        color: #58606e;
-      }
-      .input {
-        border: 1px solid #c8d1e0;
-        box-sizing: border-box;
-        border-radius: 6px;
-        height: 40px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 12px;
-        &.active {
-          background-color: #f5f7fa;
-          border: 1px solid #f5f7fa;
-        }
-        &.active .svg-icon {
-          cursor: pointer;
-        }
-      }
-    }
-    .buttons-group {
-      display: flex;
-      margin-top: 24px;
-      @media (max-width: 630px) {
-        button {
-          width: 48%;
-          justify-content: center;
-          padding: 0 !important;
-        }
-      }
-      button {
-        height: 40px;
-        padding: 0 32px;
-      }
-      button:first-child {
-        border: 1px solid #ffc107;
-        color: #8b5c00;
-        margin-right: 16px;
       }
     }
   }

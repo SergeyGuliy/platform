@@ -97,4 +97,42 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.form-group .vs__dropdown-toggle {
+  cursor: pointer;
+  height: 40px;
+  .v-select,
+  .vs__selected-options {
+    height: 40px;
+  }
+  #vs1__combobox {
+    height: 40px;
+  }
+  .vs__selected-options {
+  }
+  input {
+    border: none;
+  }
+  .vs__selected {
+    bottom: 8px;
+    left: 12px;
+    background-color: white;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 24px;
+    color: #1d2228;
+    padding: 0;
+    margin: 0;
+  }
+  .vs--open {
+    #vs1__combobox {
+      border: 1px solid #ffc107;
+    }
+    #vs1__listbox {
+      border: 1px solid #ffc107;
+      border-top: none;
+    }
+  }
+}
+</style>

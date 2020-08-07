@@ -8,8 +8,10 @@ export const educationCategory = "educationCategory",
   educationPlatform = "educationPlatform",
   educationNewPlatform = "educationNewPlatform",
   educationNewPlatformSettings = "educationNewPlatformSettings",
+  educationNewPlatformMainInfo = "educationNewPlatformMainInfo",
   educationAllCourses = "educationAllCourses",
-  educationMyCourses = "educationMyCourses";
+  educationMyCourses = "educationMyCourses",
+  educationNewPlatformPreview = "educationNewPlatformPreview";
 
 export const courseResource = "courseResource",
   courseLearningPlan = "courseLearningPlan",

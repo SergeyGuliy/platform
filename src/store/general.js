@@ -6,7 +6,8 @@ export const state = {
   showMobileMenu: true,
 
   isMobile: false,
-  isDesktop: false
+  isDesktop: false,
+  previewData: null
 };
 
 export const getters = {};
@@ -38,6 +39,9 @@ export const mutations = {
   },
   SET_IS_DESKTOP(state, status) {
     state.isDesktop = status;
+  },
+  SET_PREVIEW_DATA(state, data) {
+    state.previewData = data;
   }
 };
 

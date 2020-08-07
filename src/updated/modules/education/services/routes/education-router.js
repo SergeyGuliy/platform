@@ -12,7 +12,9 @@ import {
   courseAbout,
   educationNewPlatform,
   educationMyCourses,
-  educationNewPlatformSettings
+  educationNewPlatformSettings,
+  educationNewPlatformMainInfo,
+  educationNewPlatformPreview
 } from "./education-courses-routes-name";
 
 const baseCourseUrl = "/education/courses";
@@ -53,7 +55,7 @@ export const educationRoutes = [
       {
         path: "my-platform",
         name: educationMyCourses,
-        component: () => import("../../pages/learning-page/LearningMyPlatform"),
+        component: () => import("../../pages/learning-page/LearningMyPlatforms"),
         meta: {
           layout: "app"
         }
@@ -70,6 +72,22 @@ export const educationRoutes = [
         path: "platform-settings",
         name: educationNewPlatformSettings,
         component: () => import("../../pages/learning-page/LearningMyPlatformSettings"),
+        meta: {
+          layout: "app"
+        }
+      },
+      {
+        path: "platform-main-info",
+        name: educationNewPlatformMainInfo,
+        component: () => import("../../pages/learning-page/LearningMyPlatformMainInfo"),
+        meta: {
+          layout: "app"
+        }
+      },
+      {
+        path: "platform-preview",
+        name: educationNewPlatformPreview,
+        component: () => import("../../pages/learning-page/LearningMyNewPlatformPreview"),
         meta: {
           layout: "app"
         }

@@ -1,5 +1,5 @@
 <template>
-  <v-modal-window>
+  <v-modal-window id="UploadVideoModal">
     <div class="create-exit-box">
       <div class="create-exit-box__title">Добавить видео</div>
       <v-input name="value" title="По ссылка с YouTube, Vimeo и т.д." v-model="value" />
@@ -22,7 +22,7 @@ export default {
       value: ""
     };
   },
-  name: "LandingCloseModal",
+  name: "UploadVideoModal",
   mixins: [modal],
   methods: {
     save() {
@@ -40,36 +40,44 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.create-exit-box__title {
-  font-family: "Roboto", sans-serif;
-  font-weight: bold;
-  font-size: 20px;
-  line-height: 28px;
-  display: flex;
-  color: #1d2228;
-  margin-bottom: 16px;
-}
-.or {
-  margin-top: 10px;
-  margin-bottom: 0;
-  font-size: 14px;
-  line-height: 24px;
-}
-
-.create-exit-box__actions {
-  margin-top: 8px;
-  .create-exit-box__action {
-    padding: 0;
-    width: 100%;
+<style lang="scss">
+#UploadVideoModal {
+  .create-exit-box__title {
     font-family: "Roboto", sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 24px;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 28px;
+    display: flex;
     color: #1d2228;
-    width: 100%;
-    button {
+    margin-bottom: 16px;
+  }
+  .or {
+    margin-top: 10px;
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .modal-window__wrapper {
+    @media (max-width: 834px) {
+      padding: 20px;
+    }
+  }
+
+  .create-exit-box__actions {
+    margin-top: 8px;
+    .create-exit-box__action {
+      padding: 0;
       width: 100%;
+      font-family: "Roboto", sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 24px;
+      color: #1d2228;
+      width: 100%;
+      button {
+        width: 100%;
+      }
     }
   }
 }

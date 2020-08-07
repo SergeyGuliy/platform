@@ -1,15 +1,30 @@
 <template>
-  <div id="PhotoInput">
+  <div id="VideoInput">
     <div class="block">
       <div class="left">
-        <v-button custom-type="text" custom-style="primary" @click="uploadPhoto" v-if="!formData.photo">
+        <v-button custom-type="text" custom-style="primary" @click="uploadVideo" v-if="!formData.video">
           <div style="display: flex; align-items: center">
             <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
-            <span class="bottom__inner">Добавить фото</span>
+            <span class="bottom__inner">Добавить видео</span>
           </div>
         </v-button>
         <div class="file-input" v-else>
-          <div class="lable">Фото {{ formData.photo ? `(${converterFileSize(formData.photo.size)})` : "" }}</div>
+          <div class="lable">Видео {{ formData.video ? `(${converterFileSize(formData.video.size)})` : "" }}</div>
+          <div class="input" :class="formData.video ? 'active' : ''">
+            <div class="file-name">{{ formData.video ? formData.video.name : "" }}</div>
+            <div @click.stop="cleanVideo">
+              <v-icon src="delete" />
+            </div>
+          </div>
+        </div>
+        <v-button custom-type="text" custom-style="primary" @click="uploadPhoto" v-if="!formData.photo">
+          <div style="display: flex; align-items: center">
+            <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
+            <span class="bottom__inner">Добавить обложку видео</span>
+          </div>
+        </v-button>
+        <div class="file-input" v-else>
+          <div class="lable">Оболожка {{ formData.photo ? `(${converterFileSize(formData.photo.size)})` : "" }}</div>
           <div class="input" :class="formData.photo ? 'active' : ''">
             <div class="file-name">{{ formData.photo ? formData.photo.name : "" }}</div>
             <div @click="cleanPhoto">
@@ -17,16 +32,6 @@
             </div>
           </div>
         </div>
-
-        <v-select
-          name="country_id"
-          title="Размер фото"
-          rules="required"
-          v-model="formData.size"
-          @change="change"
-          :options="options"
-        />
-
         <v-button
           custom-type="text"
           custom-style="primary"
@@ -35,7 +40,7 @@
         >
           <div style="display: flex; align-items: center">
             <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
-            <span class="bottom__inner">Добавить заголовок к фото</span>
+            <span class="bottom__inner">Добавить заголовок к видео</span>
           </div>
         </v-button>
         <div v-else class="input-block">
@@ -47,6 +52,14 @@
 
         <input
           type="file"
+          accept="video/*"
+          style="display: none"
+          id="selectVideo"
+          ref="selectVideo"
+          v-on:change="uploadVideoAction"
+        />
+        <input
+          type="file"
           accept="image/*"
           style="display: none"
           id="selectPhoto"
@@ -55,53 +68,33 @@
         />
       </div>
       <div class="right">
-        <img v-show="urlPhoto" :src="urlPhoto" alt="" width="240px" />
-        <div class="right-header">{{ formData.photo ? formData.photo.name : "" }}</div>
+        <video v-show="urlVideo || urlPhoto" :poster="urlPhoto" :src="urlVideo" width="240px" controls id="videoBox" />
+        <div class="right-header">{{ formData.header }} {{ formData.duration }}</div>
       </div>
     </div>
 
     <div class="buttons-group">
-      <button class="my-button outlined" @click="closePhotoEditor">Отменить</button>
+      <button class="my-button outlined" @click="closeVideoEditor">Отменить</button>
       <button class="my-button filled" @click="sendData">Сохранить</button>
     </div>
   </div>
 </template>
 
 <script>
-import VButton from "../../../../../common/components/VButton";
+import VButton from "../../../../common/components/VButton";
 
 export default {
-  name: "PhotoInput",
+  name: "VideoInput",
   data() {
     return {
       formData: {
+        video: null,
         photo: null,
         header: null,
-        size: "На 25% ширины"
+        duration: ""
       },
-      options: [
-        {
-          label: "На всю ширину",
-          value: "full"
-        },
-        {
-          label: "Оригинальный размер",
-          value: "original"
-        },
-        {
-          label: "На 75% ширины",
-          value: "75%"
-        },
-        {
-          label: "На 50% ширины",
-          value: "50%"
-        },
-        {
-          label: "На 25% ширины",
-          value: "25%"
-        }
-      ],
-      urlPhoto: null
+      urlPhoto: null,
+      urlVideo: null
     };
   },
   watch: {
@@ -122,30 +115,46 @@ export default {
     }
   },
   methods: {
-    change(val) {
-      console.log(val);
-    },
     cleanPhoto() {
       if (this.formData.photo) {
         this.formData.photo = null;
         this.urlPhoto = null;
       }
     },
+    cleanVideo() {
+      if (this.formData.video) {
+        this.formData.video = null;
+        this.urlVideo = null;
+      }
+    },
     sendData() {
-      if (this.formData.photo !== null) {
-        this.savePhotoEditor(
+      if (this.formData.video !== null) {
+        this.saveVideoEditor(
           {
             ...this.formData,
-            urlPhoto: this.urlPhoto
+            urlPhoto: this.urlPhoto,
+            urlVideo: this.urlVideo
           },
           this.crossId
         );
       } else {
-        this.closePhotoEditor();
+        this.closeVideoEditor();
       }
+    },
+    uploadVideo() {
+      if (this.formData.video) return;
+      console.warn("sdfsdfdsdfs");
+      document.getElementById("selectVideo").click();
     },
     uploadPhoto() {
       document.getElementById("selectPhoto").click();
+    },
+    async uploadVideoAction(e) {
+      let files = e.target.files || e.dataTransfer.files;
+      if (!files.length) return;
+
+      this.formData.video = files[0];
+      this.urlVideo = await URL.createObjectURL(this.formData.video);
     },
     uploadPhotoAction(e) {
       let files = e.target.files || e.dataTransfer.files;
@@ -173,17 +182,18 @@ export default {
     if (this.crossData) {
       this.formData = { ...this.crossData };
       this.urlPhoto = this.crossData.urlPhoto;
+      this.urlVideo = this.crossData.urlVideo;
     } else {
       this.formData = {
+        video: null,
         photo: null,
-        header: null,
-        size: "full"
+        header: null
       };
     }
   },
   props: {
-    closePhotoEditor: Function,
-    savePhotoEditor: Function,
+    closeVideoEditor: Function,
+    saveVideoEditor: Function,
     crossData: {
       required: false
     },
@@ -198,7 +208,7 @@ export default {
 </script>
 
 <style lang="scss">
-#PhotoInput {
+#VideoInput {
   border-top: 1px solid #ebeff5;
   padding-top: 24px;
 
@@ -215,8 +225,7 @@ export default {
       flex-direction: column;
       .right {
         order: 0;
-        margin-bottom: 10px;
-        img {
+        video {
           min-width: 100%;
         }
       }

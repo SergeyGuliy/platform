@@ -10,7 +10,6 @@ export const learningState = {
       { title: "video", isActive: false, isValid: true },
       { title: "message", isActive: false, isValid: true },
       { title: "final", isActive: false, isValid: true },
-
       { title: "plan", isActive: false, isValid: false }
     ],
     currentCourseData: null,
