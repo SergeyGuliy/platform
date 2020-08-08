@@ -10,10 +10,10 @@
         </div>
         <div class="learn-course__header-text-wrapper">
           <div class="learn-course__header-text">
-            <div class="learn-course__header-text-subtitle" v-html="headerData.subTitle"></div>
+            <div class="learn-course__header-text-subtitle" v-html="headerData.description"></div>
             <div class="learn-course__header-text-start">
               <v-button class="desktop" @click="$router.push({ name: 'educationNewPlatform' })">
-                {{ headerData.buttonText }}
+                Управление учебным планом
               </v-button>
               <v-button
                 custom-type="text"
@@ -28,11 +28,11 @@
             </div>
           </div>
           <div class="learn-course__header-video">
-            <video src="" poster="../../../../../assets/images/base-photo3.png" controls></video>
+            <video :src="headerData.video_id" poster="../../../../../assets/images/base-photo3.png" controls></video>
           </div>
         </div>
         <v-button class="tablet" @click="$router.push({ name: 'educationNewPlatform' })">
-          {{ headerData.buttonText }}
+          Управление учебным планом
         </v-button>
       </div>
     </div>
@@ -99,12 +99,7 @@ export default {
   data() {
     return {
       show: null,
-      headerData: {
-        title: "Командное Обучение",
-        subTitle:
-          "В этом курсе ты узнаеш в чем суть платформы, какие преимущества платформы и все о работе с платформой",
-        buttonText: "Управление учебным планом"
-      },
+      headerData: {},
       accordion: {
         title: "Учебный план",
         subtitle: "Уроков (12); Тестов (2); Всего (7 ч., 18 мин.)",
@@ -261,6 +256,16 @@ export default {
         ]
       }
     };
+  },
+  async created() {
+    await this.$api.learning.tutorial
+      .getTutorial()
+      .then(data => {
+        this.headerData = data.data.general_information;
+      })
+      .catch(e => {
+        console.log(e);
+      });
   },
   methods: {
     copyLink(val) {

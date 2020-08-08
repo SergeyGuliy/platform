@@ -22,7 +22,7 @@
                 >
                   Отменить
                 </v-button>
-                <v-button style="height: 48px;" class="desktop" @click="submitCreation">
+                <v-button style="height: 48px;" class="desktop" @click="submit">
                   Сохранить
                 </v-button>
               </div>
@@ -48,16 +48,18 @@
       </p>
       <div class="block">
         <div class="left">
-          <v-button custom-type="text" custom-style="primary" @click="uploadVideo" v-if="!formData.video">
+          <v-button custom-type="text" custom-style="primary" @click="uploadVideo" v-if="!formData.video_id">
             <div style="display: flex; align-items: center">
               <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
               <span class="bottom__inner">Добавить видео</span>
             </div>
           </v-button>
           <div class="file-input" v-else>
-            <div class="lable">Видео {{ formData.video ? `(${converterFileSize(formData.video.size)})` : "" }}</div>
-            <div class="input" :class="formData.video ? 'active' : ''">
-              <div class="file-name">{{ formData.video ? formData.video.name : "" }}</div>
+            <div class="lable">
+              Видео {{ formData.video_id ? `(${converterFileSize(formData.video_id.size)})` : "" }}
+            </div>
+            <div class="input" :class="formData.video_id ? 'active' : ''">
+              <div class="file-name">{{ formData.video_id ? formData.video_id.name : "" }}</div>
               <div @click.stop="cleanVideo">
                 <v-icon src="delete" />
               </div>
@@ -106,13 +108,13 @@
             id="videoBox"
           />
           <div class="right-header">
-            {{ formData.video ? formData.video.name : "" }}
+            {{ formData.video_id ? formData.video_id.name : "" }}
             <div>{{ formData.duration }}</div>
           </div>
         </div>
       </div>
     </div>
-    <button class="my-button filled save">
+    <button class="my-button filled save" @click="submit">
       Сохранить
     </button>
   </div>
@@ -126,17 +128,33 @@ export default {
   components: {
     VButton
   },
+  created() {
+    this.$api.learning.tutorial
+      .getTutorial()
+      .then(data => {
+        this.formData = {
+          title: data.data.general_information.title,
+          description: data.data.general_information.description,
+          urlVideo: data.data.general_information.video
+        };
+        this.isUpdating = true;
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  },
   data() {
     return {
       formData: {
         title: null,
         description: null,
-        video: null,
+        video_id: null,
         urlVideo: null,
         photo: null,
         urlPhoto: null,
         duration: ""
-      }
+      },
+      isUpdating: false
     };
   },
   watch: {
@@ -158,13 +176,33 @@ export default {
   },
 
   methods: {
+    async submit() {
+      if (this.isUpdating) {
+        this.$api.learning.tutorial
+          .updateTutorial(this.formData)
+          .then(data => {
+            console.log(data);
+            this.$router.push("/education/my-platform");
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      } else {
+        this.$api.learning.tutorial
+          .createTutorial(this.formData)
+          .then(data => {
+            console.log(data);
+            this.$router.push("/education/my-platform");
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }
+    },
     endCreation() {
       this.openModal("Submit").then(() => {
         this.$router.push("/education/my-platform");
       });
-    },
-    submitCreation() {
-      this.$router.push("/education/my-platform");
     },
     cleanPhoto() {
       if (this.formData.photo) {
@@ -173,14 +211,14 @@ export default {
       }
     },
     cleanVideo() {
-      if (this.formData.video) {
-        this.formData.video = null;
+      if (this.formData.video_id) {
+        this.formData.video_id = null;
         this.formData.urlVideo = null;
         this.formData.duration = null;
       }
     },
     uploadVideo() {
-      if (this.formData.video) return;
+      if (this.formData.video_id) return;
       document.getElementById("selectVideo").click();
     },
     uploadPhoto() {
@@ -190,8 +228,8 @@ export default {
       let files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
 
-      this.formData.video = files[0];
-      this.formData.urlVideo = URL.createObjectURL(this.formData.video);
+      this.formData.video_id = files[0];
+      this.formData.urlVideo = URL.createObjectURL(this.formData.video_id);
     },
     uploadPhotoAction(e) {
       let files = e.target.files || e.dataTransfer.files;

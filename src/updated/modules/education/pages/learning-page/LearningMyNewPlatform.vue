@@ -145,6 +145,23 @@ export default {
     VButton,
     "v-draggable-provider": Draggable
   },
+  created() {
+    this.$api.learning.sections
+      .getSections()
+      .then(data => {
+        console.log(data.data.data);
+        this.sectionsList = data.data.data;
+        // this.formData = {
+        //   title: data.data.general_information.title,
+        //   description: data.data.general_information.description,
+        //   urlVideo: data.data.general_information.video
+        // };
+        // this.isUpdating = true;
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  },
   data() {
     return {
       sectionsList: [
@@ -394,9 +411,6 @@ export default {
     };
   },
   methods: {
-    getssss(val) {
-      console.log(val);
-    },
     showPreview(data) {
       this.$store.commit("general/SET_PREVIEW_DATA", data);
       this.$router.push({ name: "educationNewPlatformPreview" });
@@ -412,6 +426,14 @@ export default {
       this.openModal("DeleteSection")
         .then(() => {
           this.sectionsList.splice(id, 1);
+          this.$api.learning.sections
+            .deleteSection(id)
+            .then(data => {
+              console.log(data.data);
+            })
+            .catch(e => {
+              console.log(e);
+            });
         })
         .catch(() => {});
     },
@@ -429,6 +451,14 @@ export default {
       this.activeSectionId = id;
       this.activeLessonId = this.sectionsList[id].lessonList.length;
       this.lessonIsOpen = true;
+      this.$api.learning.lessons
+        .createLesson(id, { title: "", is_active: true })
+        .then(data => {
+          console.log(data.data);
+        })
+        .catch(e => {
+          console.log(e);
+        });
     },
     cleanDropdown() {
       this.dropdownActive = null;
@@ -439,10 +469,18 @@ export default {
         limit: "",
         lessonList: []
       });
+      this.$api.learning.sections
+        .createSection({ title: "rewrew", is_active: true, finish_type: {} })
+        .then(data => {
+          console.log(data.data);
+        })
+        .catch(e => {
+          console.log(e.data.message);
+        });
     },
-    submitCreation() {
-      this.$router.push("/education/my-platform");
-    },
+    // submitCreation() {
+    //   this.$router.push("/education/my-platform");
+    // },
     createLesson(sectionId, lessonId, lessonData) {
       this.sectionsList[sectionId].lessonList.push(lessonData);
       this.lessonIsOpen = false;

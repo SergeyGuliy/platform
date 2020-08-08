@@ -11,6 +11,7 @@ Vue.use(Api, {
     ...require("../api/files").default,
     ...require("../api/main").default,
     ...require("../api/statistic").default,
-    ...require("../api/tools").default
+    ...require("../api/tools").default,
+    ...require("../api/learning").default
   }
 });

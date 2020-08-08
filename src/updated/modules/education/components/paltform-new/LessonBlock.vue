@@ -20,6 +20,9 @@
           <div class="header-left">
             <div class="title">Урок 1</div>
           </div>
+          <div class="header-right">
+            <v-icon src="delete" />
+          </div>
         </div>
         <div class="section-body">
           <v-input
@@ -39,11 +42,11 @@
                 <v-icon src="drag" />
                 <div class="title">Текст</div>
               </div>
-              <div class="header-right" style="cursor: pointer">
-                <div @click="editBlockById(id, block.type, block.data)">
+              <div class="header-right">
+                <div @click="editById(id, block.type, block.data)">
                   <v-icon src="edit" style="margin-right: 16px" />
                 </div>
-                <div @click="deleteBlockById(id)" style="cursor: pointer">
+                <div @click="deleteBlockById(id)">
                   <v-icon src="delete" />
                 </div>
               </div>
@@ -58,7 +61,7 @@
                 <div class="title">Видео</div>
               </div>
               <div class="header-right">
-                <div @click="editBlockById(id, block.type, block.data)">
+                <div @click="editById(id, block.type, block.data)">
                   <v-icon src="edit" style="margin-right: 16px" />
                 </div>
 
@@ -83,7 +86,7 @@
                 <div class="title">Картинка</div>
               </div>
               <div class="header-right">
-                <div @click="editBlockById(id, block.type, block.data)">
+                <div @click="editById(id, block.type, block.data)">
                   <v-icon src="edit" style="margin-right: 16px" />
                 </div>
                 <div @click="deleteBlockById(id)">
@@ -338,7 +341,7 @@ export default {
         answer: ""
       });
     },
-    editBlockById(id, type, data) {
+    editById(id, type, data) {
       this.crossData = data;
       this.crossId = id;
       if (type === "text") {
