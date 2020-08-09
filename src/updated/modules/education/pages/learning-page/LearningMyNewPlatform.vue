@@ -42,20 +42,22 @@
                   name="telegram.login"
                   title="Название секции"
                   rules="required"
-                  v-model="section.sectionName"
+                  v-model="section.title"
                   counter
                   :max="32"
+                  @input="blur(id, section.title, section.requirements.min_rank)"
                 />
                 <v-select
                   name="country_id"
                   title="Доступен для (мин. ранг)"
                   rules="required"
-                  v-model="section.limit"
+                  v-model="section.requirements.min_rank"
                   :options="options"
+                  @input="blur(id, section.title, section.requirements.min_rank)"
                 />
               </div>
-              <v-draggable-provider name="lessons" v-model="section.lessonList">
-                <div class="lessons" v-for="(lesson, lessonId) in section.lessonList" :key="lessonId">
+              <v-draggable-provider name="lessons" v-model="section.lessons">
+                <div class="lessons" v-for="(lesson, lessonId) in section.lessons" :key="lessonId">
                   <div class="section-header">
                     <div class="header-left">
                       <v-icon src="drag" style="cursor: grab" />
@@ -63,7 +65,7 @@
                         <div class="title">Урок {{ lessonId + 1 }}: {{ lesson.lessonName }}</div>
                         <div class="bottom-title">
                           Необходимо пройти: Урок
-                          {{ -(section.lessonList.length - section.lessonList.length - lessonId) }}, Тест 1
+                          {{ -(section.lessons.length - section.lessons.length - lessonId) }}, Тест 1
                         </div>
                       </div>
                     </div>
@@ -166,9 +168,11 @@ export default {
     return {
       sectionsList: [
         {
-          sectionName: "Дефолтный блок 111",
-          limit: "DT4",
-          lessonList: [
+          title: "Дефолтный блок 111",
+          requirements: {
+            min_rank: ""
+          },
+          lessons: [
             {
               lessonName: "Дефолтный урок 1",
               lessonsBlocks: [
@@ -358,9 +362,11 @@ export default {
         },
 
         {
-          sectionName: "Дефолтный блок 222",
-          limit: "STAR",
-          lessonList: [
+          title: "Дефолтный блок 222",
+          requirements: {
+            min_rank: ""
+          },
+          lessons: [
             {
               lessonName: "Дефолтный урок",
               lessonsBlocks: [],
@@ -411,6 +417,22 @@ export default {
     };
   },
   methods: {
+    blur(sectionId, title, min_rank) {
+      console.log(sectionId);
+      console.log(title);
+      console.log(min_rank);
+      this.$api.learning.sections
+        .changeLesson(sectionId, {
+          title: title,
+          min_rank: min_rank
+        })
+        .then(data => {
+          console.log(data);
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
     showPreview(data) {
       this.$store.commit("general/SET_PREVIEW_DATA", data);
       this.$router.push({ name: "educationNewPlatformPreview" });
@@ -418,18 +440,20 @@ export default {
     deleteLesson(sectionId, lessonId) {
       this.openModal("DeleteLesson")
         .then(() => {
-          this.sectionsList[sectionId].lessonList.splice(lessonId, 1);
+          this.sectionsList[sectionId].lessons.splice(lessonId, 1);
         })
         .catch(() => {});
     },
     deleteSection(id) {
+      console.log(this.sectionsList[id].id);
       this.openModal("DeleteSection")
         .then(() => {
           this.sectionsList.splice(id, 1);
+          console.log(this.sectionsList[id].id);
           this.$api.learning.sections
-            .deleteSection(id)
+            .deleteSection(this.sectionsList[id].id)
             .then(data => {
-              console.log(data.data);
+              console.log(data);
             })
             .catch(e => {
               console.log(e);
@@ -449,7 +473,7 @@ export default {
     },
     addLesson(id) {
       this.activeSectionId = id;
-      this.activeLessonId = this.sectionsList[id].lessonList.length;
+      this.activeLessonId = this.sectionsList[id].lessons.length;
       this.lessonIsOpen = true;
       this.$api.learning.lessons
         .createLesson(id, { title: "", is_active: true })
@@ -464,15 +488,18 @@ export default {
       this.dropdownActive = null;
     },
     addSection() {
-      this.sectionsList.push({
-        sectionName: "",
-        limit: "",
-        lessonList: []
-      });
       this.$api.learning.sections
-        .createSection({ title: "rewrew", is_active: true, finish_type: {} })
+        .createSection({ title: "Новая секция", is_active: true, finish_type: {} })
         .then(data => {
           console.log(data.data);
+
+          this.sectionsList.push({
+            title: "Новая секция",
+            requirements: {
+              min_rank: ""
+            },
+            lessons: []
+          });
         })
         .catch(e => {
           console.log(e.data.message);
@@ -482,7 +509,7 @@ export default {
     //   this.$router.push("/education/my-platform");
     // },
     createLesson(sectionId, lessonId, lessonData) {
-      this.sectionsList[sectionId].lessonList.push(lessonData);
+      this.sectionsList[sectionId].lessons.push(lessonData);
       this.lessonIsOpen = false;
       this.crossLessonId = null;
       this.crossLessonData = null;
@@ -490,7 +517,7 @@ export default {
       this.activeSectionId = null;
     },
     editLesson(ids, lessonData) {
-      this.sectionsList[ids.split("-")[0]].lessonList[ids.split("-")[1]] = lessonData;
+      this.sectionsList[ids.split("-")[0]].lessons[ids.split("-")[1]] = lessonData;
       this.lessonIsOpen = false;
       this.crossLessonId = null;
       this.crossLessonData = null;

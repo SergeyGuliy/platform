@@ -20,9 +20,9 @@
           <div class="header-left">
             <div class="title">Урок 1</div>
           </div>
-          <div class="header-right">
-            <v-icon src="delete" />
-          </div>
+          <!--          <div class="header-right">-->
+          <!--            <v-icon src="delete" />-->
+          <!--          </div>-->
         </div>
         <div class="section-body">
           <v-input

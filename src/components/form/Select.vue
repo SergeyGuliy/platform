@@ -111,7 +111,7 @@ export default {
   .vs__selected-options {
   }
   input {
-    border: none;
+    border: none !important;
   }
   .vs__selected {
     bottom: 8px;
@@ -127,10 +127,10 @@ export default {
   }
   .vs--open {
     #vs1__combobox {
-      border: 1px solid #ffc107;
+      border: 1px solid #ffc107 !important;
     }
     #vs1__listbox {
-      border: 1px solid #ffc107;
+      border: 1px solid #ffc107 !important;
       border-top: none;
     }
   }
