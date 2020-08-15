@@ -2,7 +2,7 @@ import axios from "axios";
 
 window.axios = axios;
 window.axios.defaults.headers.common["Authorization"] =
-  "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImRhNTFhYmFhNDRhZGUzY2RjYjg0YTAxNTdmNjY2NDNjNTg3ZDk5NjM1ZTc5MDdjYWM1NzhkOTM1YzliOWY3YTcyNzQ0ODk5ZDRiNjJjMzk4In0.eyJhdWQiOiIxIiwianRpIjoiZGE1MWFiYWE0NGFkZTNjZGNiODRhMDE1N2Y2NjY0M2M1ODdkOTk2MzVlNzkwN2NhYzU3OGQ5MzVjOWI5ZjdhNzI3NDQ4OTlkNGI2MmMzOTgiLCJpYXQiOjE1OTY4NDYxOTcsIm5iZiI6MTU5Njg0NjE5NywiZXhwIjoxNjI4MzgyMTk3LCJzdWIiOiI5OTUiLCJzY29wZXMiOltdfQ.iungx0pIQs2AhIIQ_s3P3EBK4zIkk60QV7skiwEeoRwHV1j5eJEL37-StD_McMYAKTOefozLMS0J8Nk1qHtZ9NWo_BgsmjiUgoP69G3CE0qVVTW37rUGzRTmuVnGP4JCzcYlItLP4TnmVwvWEHe5W8QL2MFw-V0UuuzyxtVaXDxnYY5NlBYl2K-j6KyRqfO3EcRE40FhUnJF4do9lMxZ2HEFgwcU5k0smIL9Jz18R6l2HPoMa-39kuRWU9g3HZdp_y3tJXDkTBcQd1kF0GX-iE0CbnCBaxTmpbaKd0eUE-N8doRymwRn5IR1z2qqvidSY7ookB1rJrlL6tNx962OjkpAdvU09Kcl7RhO9wIgjIK3RNdI0CIIqUnDyO2c6SxX9Nardwy6UnLuu16pliMmnxhzf1mLYSozMIf2KKaZQLn87JaGR6qEwl3Too4XbcXFSELWYEH5cEbG74ko5ebT5JsXD6VYaPNQkqTnRQ7U4U2REsbIM75byijIEJnX8R6hsAqlk63pJKKSwsqUN5FOxv1xre6GYAxZYthPnOw5ENKipafqihKXRAN_0eBq5Q_n-OSz_nIzd1_YrubuP8DNg-fw2n96rxpwisfmd0TyNiKxVqX12hFLzTeP3NdgnpNlJFQIEmswRazuDV166x84VI_kZg1vG-1FENkufumUKC8";
+  "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImI2ZTVkOTQxN2Y1NzRkZjhmYTVlN2UzOWU5NzU1ODUzZTY2YjRhODM4OWE3NjJjOWI4YzIwZDNmMjNkYTYzZTVhYjgwNjk3NDM3YWNkOWQyIn0.eyJhdWQiOiIxIiwianRpIjoiYjZlNWQ5NDE3ZjU3NGRmOGZhNWU3ZTM5ZTk3NTU4NTNlNjZiNGE4Mzg5YTc2MmM5YjhjMjBkM2YyM2RhNjNlNWFiODA2OTc0MzdhY2Q5ZDIiLCJpYXQiOjE1OTczNTU4MTMsIm5iZiI6MTU5NzM1NTgxMywiZXhwIjoxNjI4ODkxODEzLCJzdWIiOiI5OTUiLCJzY29wZXMiOltdfQ.kJdy8W4DAXXTFPR8HKeSCjtjjvNXxxW2qCCx5MtGe16WZ0bNudxAiiO2wNw3fsTkcDSU3IEgJj-04TsrCkV8-Zp8NKAo4Ttv6Y7_SoeXKLH02KaeeBLKluWaHj6CEGBronG9rgcY4XWnWXlQYK_kX6cXD-RgDiFunc9M-IR2Mjp2M4fgRdCpFPMtg3GLH3-jHGhdopYdJPkZboM1WpoG-V4zLPkROHNpLjHhcG8fNoX4aX3WoB6dNOLfz9_HLH2pTZBnBl5KIp7R__X-QjLePeKJfDSpQ6F1uDqspphPpN-N6M3fvKELtMAa8AlBmSCvAtgU3sgZEL6btAZ0i4Pulb9q-5P290F3DoCGFeKU5HpxXhIM0vb6VDYOSxKHRJZSOKivx3Vq3nqNoKK1Sj0a_0XwHnhR0XucDpf9NNqm9TTwwuVafRzCvcx4rEpXNRNByCaIzSWlcI9L8AggCNYnvISO3RmhPuL-kBoeTnawv_iJujARKq-f0k19791a3Xfq7FwlAXVMvlgakDrLubWPRa5JStEU72PtKMYg6zpN_VtTsxfVtR570kqW-IsFkNZXDgo4qfPbm5mbCsidARDnlKCLOLQAEgKoz-Ov5aDKml2d_q49DLbP__6Oz0soaqmbMlsUxjsF-guBeKZTAFa6cjBrwxxIt3THSOGSjFA2QWs";
 window.axiosTokens = {};
 
 let domain = "";
@@ -36,10 +36,12 @@ function jsonToFormData(data) {
 function request(method, url, data, vmId = null, scope = "form", progress = () => {}) {
   data = { ...data };
 
+  console.warn(method);
   if (["delete", "put", "patch"].indexOf(method) !== -1) {
     data["_method"] = method;
-    method = "post";
+    // method = "post";
   }
+  console.warn(method);
 
   if (method === "post") {
     data = jsonToFormData(data);

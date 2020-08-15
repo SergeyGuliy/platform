@@ -14,7 +14,8 @@ import {
   educationMyCourses,
   educationNewPlatformSettings,
   educationNewPlatformMainInfo,
-  educationNewPlatformPreview
+  educationNewPlatformPreview,
+  educationNewPlatformNewLesson
 } from "./education-courses-routes-name";
 
 const baseCourseUrl = "/education/courses";
@@ -64,6 +65,14 @@ export const educationRoutes = [
         path: "platform-new",
         name: educationNewPlatform,
         component: () => import("../../pages/learning-page/LearningMyNewPlatform"),
+        meta: {
+          layout: "app"
+        }
+      },
+      {
+        path: "platform-new/:id",
+        name: educationNewPlatformNewLesson,
+        component: () => import("../../pages/learning-page/LearningMyNewPlatformNewLesson"),
         meta: {
           layout: "app"
         }

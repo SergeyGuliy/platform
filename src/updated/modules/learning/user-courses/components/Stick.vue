@@ -1,6 +1,6 @@
 <template>
   <div class="uploader-descriptor__control-item-result-content">
-    <button type="button" class="__clean-btn upload-result video-reset" @click="removeResource(config.index)">
+    <button type="button" class="__clean-btn upload-result video-reset" @click="cleanById(config.directiveId)">
       <i :style="{ width: config.progress }"></i><span>{{ config.name }}</span>
       <v-icon src="delete"></v-icon>
     </button>
@@ -13,7 +13,7 @@ import { LEARNING_LECTURE_RESOURCE_REMOVE } from "@/updated/modules/learning/sto
 
 export default {
   name: "Stick",
-  props: ["config"],
+  props: ["config", "cleanById"],
   methods: {
     ...mapMutations("learning", [LEARNING_LECTURE_RESOURCE_REMOVE]),
     removeResource(idx) {

@@ -28,29 +28,31 @@
         </div>
       </template>
 
-      <div class="preview-page-bottom-block" v-if="previewData.endData.endType === 'button'">
-        <v-button style="height: 48px;" class="desktop">
-          {{ previewData.endData.buttonText ? previewData.endData.buttonText : "Кнопка завершения урока" }}
-        </v-button>
-      </div>
-      <div class="preview-page-bottom-block" v-if="previewData.endData.endType === 'key'">
-        <v-input
-          name="telegram.login"
-          title="Название урока"
-          rules="required"
-          v-model="previewData.endData.keyWord"
-          counter
-          :max="10"
-        />
+      <div v-if="previewData.endData">
+        <div class="preview-page-bottom-block" v-if="previewData.endData.endType === 'button'">
+          <v-button style="height: 48px;" class="desktop">
+            {{ previewData.endData.buttonText ? previewData.endData.buttonText : "Кнопка завершения урока" }}
+          </v-button>
+        </div>
+        <div class="preview-page-bottom-block" v-if="previewData.endData.endType === 'key'">
+          <v-input
+            name="telegram.login"
+            title="Название урока"
+            rules="required"
+            v-model="previewData.endData.keyWord"
+            counter
+            :max="10"
+          />
 
-        <v-button style="height: 40px; margin-left: 8px; padding: 10px 32px" class="desktop">
-          Завершить
-        </v-button>
-      </div>
-      <div class="preview-page-bottom-block" v-if="previewData.endData.endType === 'test'">
-        <v-button style="height: 48px;" class="desktop">
-          Пройти тест
-        </v-button>
+          <v-button style="height: 40px; margin-left: 8px; padding: 10px 32px" class="desktop">
+            Завершить
+          </v-button>
+        </div>
+        <div class="preview-page-bottom-block" v-if="previewData.endData.endType === 'test'">
+          <v-button style="height: 48px;" class="desktop">
+            Пройти тест
+          </v-button>
+        </div>
       </div>
     </div>
   </div>

@@ -27,8 +27,8 @@
               </v-button>
             </div>
           </div>
-          <div class="learn-course__header-video">
-            <video :src="headerData.video_id" poster="../../../../../assets/images/base-photo3.png" controls></video>
+          <div class="learn-course__header-video" v-if="headerData.video">
+            <video :src="headerData.video.url" poster="../../../../../assets/images/base-photo3.png" controls></video>
           </div>
         </div>
         <v-button class="tablet" @click="$router.push({ name: 'educationNewPlatform' })">
@@ -36,7 +36,7 @@
         </v-button>
       </div>
     </div>
-    <div class="curriculum__body">
+    <div class="curriculum__body" v-if="accordion.items.length > 0">
       <div class="curriculum__list">
         <div class="curriculum__list-header">
           <div class="curriculum__list-header-title" v-if="accordion && accordion.title">{{ accordion.title }}</div>
@@ -45,7 +45,7 @@
           <div
             v-for="(item, index) in accordion.items"
             :key="index"
-            :class="`curriculum__item ${item.locked ? 'curriculum__item-disabled' : ''}`"
+            :class="`curriculum__item ${!item.is_active ? 'curriculum__item-disabled' : ''}`"
           >
             <div
               :class="`curriculum__item-title ${show === index ? 'open-plan' : ''}`"
@@ -53,29 +53,29 @@
             >
               <v-icon src="arrow-down" />
               <div class="theme-courses">{{ item.title }}</div>
-              <div class="quantity-lessons">{{ item.childs.length }} уроков</div>
-              <div class="lesson-duration">{{ item.duration }}</div>
+              <div class="quantity-lessons">{{ item.lessons.length }} уроков</div>
+              <div class="lesson-duration">03:36</div>
 
               <div class="link">
-                <v-icon v-if="item.locked" src="locked" />
+                <v-icon v-if="!item.is_active" src="locked" />
                 <v-icon v-else-if="item.icon" :src="item.icon" />
                 <div v-else style="width: 65px; height: 1px"></div>
               </div>
 
               <div class="link"></div>
-              <div class="link" @click.stop="copyLink(item.link)">
+              <div class="link" @click.stop="copyLink('https://internet-platform.ru/register/2a0')">
                 <v-icon src="link"></v-icon>
               </div>
             </div>
             <div :class="`curriculum__item-content ${show === index ? 'active-block' : ''}`">
-              <template v-if="item.childs">
-                <div v-for="(child, child_index) in item.childs" :key="child_index" class="lessons">
-                  <div class="number-lessons" v-if="child.number">{{ child.number }}</div>
+              <template v-if="item.lessons">
+                <div v-for="(child, child_index) in item.lessons" :key="child_index" class="lessons">
+                  <div class="number-lessons">{{ child_index + 1 }}</div>
                   <div class="theme-lessons" v-if="child.title">
                     {{ child.title }}
                   </div>
                   <v-icon v-if="child.icon" :src="child.icon" />
-                  <div class="link" @click.stop="copyLink(item.link)">
+                  <div class="link" @click.stop="copyLink('https://internet-platform.ru/register/2a0')">
                     <v-icon src="link"></v-icon>
                   </div>
                 </div>
@@ -103,157 +103,7 @@ export default {
       accordion: {
         title: "Учебный план",
         subtitle: "Уроков (12); Тестов (2); Всего (7 ч., 18 мин.)",
-        items: [
-          {
-            title: "О платформе",
-            duration: "03:36",
-            link: "https://internet-platform.ru/register/2a0",
-            icon: "ok-yellow",
-            locked: false,
-            childs: [
-              {
-                number: 1,
-                title: "Что такое платформа?",
-                subtitle: "Video - 02:36 min.",
-                icon: "ok-yellow",
-                link: "https://internet-platform.ru/register/2a0",
-                locked: false
-              },
-              {
-                number: 2,
-                title: "Introduction to the Course",
-                subtitle: "Video - 02:36 min.",
-                icon: "load",
-                link: "https://internet-platform.ru/register/2a0",
-                locked: false
-              }
-            ]
-          },
-          {
-            title: "70 балов",
-            duration: "03:36",
-            link: "https://internet-platform.ru/register/2a0",
-            locked: false,
-            childs: [
-              {
-                number: 1,
-                title: "Что такое платформа?",
-                subtitle: "Video - 02:36 min.",
-                icon: "ok-yellow",
-                link: "https://internet-platform.ru/register/2a0",
-                locked: false
-              },
-              {
-                number: 2,
-                title: "Introduction to the Course",
-                subtitle: "Video - 02:36 min.",
-                icon: "load",
-                link: "https://internet-platform.ru/register/2a0",
-                locked: false
-              }
-            ]
-          },
-          {
-            title: "Работа в VK",
-            quantity: "8 уроков",
-            duration: "03:36",
-            link: "https://internet-platform.ru/register/2a0",
-            locked: false,
-            childs: [
-              {
-                number: 1,
-                title: "Что такое платформа?",
-                subtitle: "Video - 02:36 min.",
-                icon: "ok-yellow",
-                link: "https://internet-platform.ru/register/2a0",
-                locked: false
-              },
-              {
-                number: 2,
-                title: "Introduction to the Course",
-                subtitle: "Video - 02:36 min.",
-                icon: "load",
-                link: "https://internet-platform.ru/register/2a0",
-                locked: false
-              }
-            ]
-          },
-          {
-            title: "Работа в Instagram",
-            quantity: "8 уроков",
-            duration: "03:36",
-            link: "https://internet-platform.ru/register/2a0",
-            locked: false,
-            childs: [
-              {
-                number: 1,
-                title: "Что такое платформа?",
-                subtitle: "Video - 02:36 min.",
-                icon: "ok-yellow",
-                link: "https://internet-platform.ru/register/2a0",
-                locked: false
-              },
-              {
-                number: 2,
-                title: "Introduction to the Course",
-                subtitle: "Video - 02:36 min.",
-                icon: "load",
-                link: "https://internet-platform.ru/register/2a0",
-                locked: false
-              }
-            ]
-          },
-          {
-            title: "Работа в Facebook",
-            quantity: "8 уроков",
-            duration: "03:36",
-            link: "https://internet-platform.ru/register/2a0",
-            locked: false,
-            childs: [
-              {
-                number: 1,
-                title: "Что такое платформа?",
-                subtitle: "Video - 02:36 min.",
-                icon: "ok-yellow",
-                link: "https://internet-platform.ru/register/2a0",
-                locked: false
-              },
-              {
-                number: 2,
-                title: "Introduction to the Course",
-                subtitle: "Video - 02:36 min.",
-                icon: "load",
-                link: "https://internet-platform.ru/register/2a0",
-                locked: false
-              }
-            ]
-          },
-          {
-            title: "Звонок",
-            quantity: "8 уроков",
-            duration: "03:36",
-            locked: true,
-            link: "https://internet-platform.ru/register/2a0",
-            childs: [
-              {
-                number: 1,
-                title: "Что такое платформа?",
-                subtitle: "Video - 02:36 min.",
-                icon: "ok-yellow",
-                link: "https://internet-platform.ru/register/2a0",
-                locked: false
-              },
-              {
-                number: 2,
-                title: "Introduction to the Course",
-                subtitle: "Video - 02:36 min.",
-                icon: "load",
-                link: "https://internet-platform.ru/register/2a0",
-                locked: false
-              }
-            ]
-          }
-        ]
+        items: []
       }
     };
   },
@@ -261,7 +111,9 @@ export default {
     await this.$api.learning.tutorial
       .getTutorial()
       .then(data => {
+        console.log(data.data.learning_plan);
         this.headerData = data.data.general_information;
+        this.accordion.items = data.data.learning_plan.sections;
       })
       .catch(e => {
         console.log(e);

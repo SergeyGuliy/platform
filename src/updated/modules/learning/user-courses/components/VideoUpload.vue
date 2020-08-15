@@ -6,6 +6,7 @@
         :config="control"
         :key="control.label"
         @uploadFile="coverUpload"
+        :cleanById="cleanById"
       ></VideoControlStick>
     </div>
     <VideoPlayer :show-key="showKey" :video-data="videoData"></VideoPlayer>
@@ -20,7 +21,7 @@ export default {
   name: "VideoUpload",
   directives: { upload: UploadDirective },
   components: { VideoPlayer, VideoControlStick },
-  props: ["videoData", "showKey", "controls"],
+  props: ["videoData", "showKey", "controls", "cleanById"],
   methods: {
     coverUpload(file) {
       this.$emit("uploadFileData", file);

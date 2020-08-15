@@ -43,7 +43,7 @@
         </div>
       </div>
     </div>
-    <div id="accessSettings">
+    <div id="accessSettings" v-if="sectionsList">
       <p>
         Здесь вы можете настроить параметры зависимости между уроками и секциями. <br />
         Например: позволить пользователям просматривать “Урок 2”, если они пересмотрели “Урок 1
@@ -58,47 +58,37 @@
             >
               <v-icon src="arrow-down"></v-icon>
             </div>
-            <div
-              class="title"
-              @click="sectionOpenedId === sectionId ? (sectionOpenedId = null) : (sectionOpenedId = sectionId)"
-            >
-              Секция {{ sectionId + 1 }}
-            </div>
+            <div class="title">Секция {{ sectionId + 1 }}</div>
           </div>
           <div class="section-head-right " v-if="sectionOpenedId !== sectionId">
-            <div
-              class="radio tooltip"
-              :class="section.isActive ? 'active' : ''"
-              @click="section.isActive = !section.isActive"
-            >
-              <div class="radio__inner" />
-              <span class="tooltiptext">Выключить доступ к уроку</span>
-            </div>
-            <div class="tooltip" @click="copyLink(section.link)">
-              <v-icon src="link" style="font-size: 24px; fill: #8E99AB;"></v-icon>
-              <span class="tooltiptext">Поделиться уроком</span>
-            </div>
+            <Tooltip text="Выключить доступ к уроку" class="PlatformSettings-radio">
+              <Radio v-model="section.is_active" />
+            </Tooltip>
+            <Tooltip text="Поделиться уроком" @click="copyLink(section.link)" class="PlatformSettings-copy">
+              <v-icon src="link" style="font-size: 24px; fill: #8E99AB;" />
+            </Tooltip>
           </div>
         </div>
         <div class="section-body" :class="sectionOpenedId === sectionId ? '' : 'hiden'">
           <div class="section-body-container">
             <div class="left">
-              <div class="section-title">{{ section.sectionName }}</div>
+              <div class="section-title">{{ section.title }}</div>
               <div
                 class="dropdown"
                 @click.stop="setDropdown(`section-${sectionId}`)"
                 :class="dropdownSelected === `section-${sectionId}` ? '' : 'disactive'"
                 v-click-outside="cleanDropdown"
               >
-                <span>{{ section.accessList.join(", ") }}</span>
+                <!--                <span>{{ section.requirements.sections.join(", ") }}</span>-->
+                <span>{{ calcSectionString(sectionId, section.requirements.sections) }}</span>
                 <v-icon src="arrow-down"></v-icon>
                 <div class="dropdown__inner">
                   <div
                     class="item"
                     v-for="(item, id) in calculateSections(sectionId)"
                     :key="id"
-                    :class="section.accessList.includes(item.label) ? '' : 'disactive'"
-                    @click="select(section.accessList, item.label)"
+                    :class="section.requirements.sections.includes(item.id) ? '' : 'disactive'"
+                    @click="select(section.requirements.sections, item.id)"
                   >
                     <div class="item-checkbox">
                       <div class="item-checkbox-inner">
@@ -109,38 +99,33 @@
                   </div>
                 </div>
               </div>
-              <div
-                class="radio tooltip"
-                :class="section.isActive ? 'active' : ''"
-                @click="section.isActive = !section.isActive"
-              >
-                <div class="radio__inner" />
-                <span class="tooltiptext">Выключить доступ к уроку</span>
-              </div>
-              <div class="tooltip">
-                <v-icon src="link" style="font-size: 24px; fill: #8E99AB;"></v-icon>
-                <span class="tooltiptext" @click="copyLink(section.link)">Поделиться уроком</span>
-              </div>
+              <Tooltip text="Выключить доступ к уроку" class="PlatformSettings-radio">
+                <Radio v-model="section.is_active" />
+              </Tooltip>
+              <Tooltip text="Поделиться уроком" @click="copyLink(section.link)" class="PlatformSettings-copy">
+                <v-icon src="link" style="font-size: 24px; fill: #8E99AB;" />
+              </Tooltip>
             </div>
           </div>
-          <div v-for="(lesson, lessonId) in section.lessonList" :key="lessonId" class="section-body-container">
-            <div class="left">
-              <div class="lesson">Урок {{ lessonId + 1 }}: {{ lesson.lessonName }}</div>
+          <div v-for="(lesson, lessonId) in section.lessons" :key="lessonId" class="section-body-container">
+            <div class="left" v-if="lesson">
+              <div class="lesson">Урок {{ lessonId + 1 }}: {{ lesson.title }}</div>
               <div
                 class="dropdown"
                 @click.stop="setDropdown(`${sectionId}-${lessonId}`)"
                 :class="dropdownSelected === `${sectionId}-${lessonId}` ? '' : 'disactive'"
                 v-click-outside="cleanDropdown"
               >
-                <span>{{ lesson.accessList.join(", ") }}</span>
+                <!--                <span>{{ lesson.requirements.lessons.join(", ") }}</span>-->
+                <span>{{ calcLessonsString(sectionId, lessonId, lesson.requirements.lessons) }}</span>
                 <v-icon src="arrow-down"></v-icon>
                 <div class="dropdown__inner">
                   <div
                     class="item"
                     v-for="(item, id) in calculateLessons(sectionId, lessonId)"
                     :key="id"
-                    :class="lesson.accessList.includes(item.label) ? '' : 'disactive'"
-                    @click="select(lesson.accessList, item.label)"
+                    :class="lesson.requirements.lessons.includes(item.id) ? '' : 'disactive'"
+                    @click="select(lesson.requirements.lessons, item.id)"
                   >
                     <div class="item-checkbox">
                       <div class="item-checkbox-inner">
@@ -151,18 +136,12 @@
                   </div>
                 </div>
               </div>
-              <div
-                class="radio tooltip"
-                :class="lesson.isActive ? 'active' : ''"
-                @click="lesson.isActive = !lesson.isActive"
-              >
-                <div class="radio__inner" />
-                <span class="tooltiptext">Выключить доступ к уроку</span>
-              </div>
-              <div class="tooltip" @click="copyLink(lesson.link)">
-                <v-icon src="link" style="font-size: 24px; fill: #8E99AB;"></v-icon>
-                <span class="tooltiptext">Поделиться уроком</span>
-              </div>
+              <Tooltip text="Выключить доступ к уроку" class="PlatformSettings-radio">
+                <Radio v-model="lesson.is_active" />
+              </Tooltip>
+              <Tooltip text="Поделиться уроком" @click="copyLink(lesson.link)" class="PlatformSettings-copy">
+                <v-icon src="link" style="font-size: 24px; fill: #8E99AB;" />
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -180,82 +159,42 @@ import VButton from "../../../../common/components/VButton";
 export default {
   name: "EducationPlatform",
   components: {
-    VButton
+    VButton,
+    Radio: () => import("../../components/UI/Radio"),
+    Tooltip: () => import("../../components/UI/Tooltip")
   },
   data() {
     return {
       dropdownSelected: null,
-      items: [
-        {
-          label: "Урок 1"
-        },
-        {
-          label: "Урок 2"
-        },
-        {
-          label: "Урок 3"
-        }
-      ],
-      itemsSelected: [],
       sectionOpenedId: 0,
-      sectionsList: [
-        {
-          sectionName: "Дефолтный секция 1",
-          isActive: false,
-          accessList: [],
-          link: "http://inernet-platform.ru/register/29f",
-          lessonList: [
-            {
-              lessonName: "Дефолтный урок 1-1",
-              accessList: [],
-              isActive: false,
-              link: "http://inernet-platform.ru/register/29f"
-            },
-            {
-              lessonName: "Дефолтный урок 1-2",
-              accessList: [],
-              isActive: false,
-              link: "http://inernet-platform.ru/register/29f"
-            },
-            {
-              lessonName: "Дефолтный урок 1-3",
-              accessList: [],
-              isActive: false,
-              link: "http://inernet-platform.ru/register/29f"
-            }
-          ]
-        },
-
-        {
-          sectionName: "Дефолтный секция 2",
-          accessList: [],
-          isActive: false,
-          link: "http://inernet-platform.ru/register/29f",
-
-          lessonList: [
-            {
-              lessonName: "Дефолтный урок 2-1",
-              accessList: [],
-              isActive: false,
-              link: "http://inernet-platform.ru/register/29f"
-            },
-            {
-              lessonName: "Дефолтный урок 2-2",
-              accessList: [],
-              isActive: false,
-              link: "http://inernet-platform.ru/register/29f"
-            }
-          ]
-        }
-      ]
+      sectionsList: null
     };
+  },
+
+  created() {
+    this.$api.learning.sections
+      .getSections()
+      .then(data => {
+        console.log(data.data.data);
+        this.sectionsList = data.data.data;
+        // this.formData = {
+        //   title: data.data.general_information.title,
+        //   description: data.data.general_information.description,
+        //   urlVideo: data.data.general_information.video
+        // };
+        // this.isUpdating = true;
+      })
+      .catch(e => {
+        console.log(e);
+      });
   },
   methods: {
     calculateSections(sectionId) {
       let sections = [];
       this.sectionsList.forEach(item => {
         sections.push({
-          label: item.sectionName
+          label: item.title,
+          id: item.id
         });
       });
       sections.splice(sectionId, 1);
@@ -263,13 +202,38 @@ export default {
     },
     calculateLessons(sectionId, lessonId) {
       let lessons = [];
-      this.sectionsList[sectionId].lessonList.forEach(item => {
+      this.sectionsList[sectionId].lessons.forEach(item => {
         lessons.push({
-          label: item.lessonName
+          label: item.title,
+          id: item.id
         });
       });
       lessons.splice(lessonId, 1);
       return lessons;
+    },
+    calcLessonsString(sectionId, lessonId, itemsSelected) {
+      let lessons = [];
+      let lessonsAll = this.calculateLessons(sectionId, lessonId);
+      for (let item of itemsSelected) {
+        lessonsAll.find(lesson => {
+          if (lesson.id == item) {
+            lessons.push(lesson.label);
+          }
+        });
+      }
+      return lessons.join(", ");
+    },
+    calcSectionString(sectionId, itemsSelected) {
+      let sections = [];
+      let lessonsAll = this.calculateSections(sectionId);
+      for (let item of itemsSelected) {
+        lessonsAll.find(lesson => {
+          if (lesson.id == item) {
+            sections.push(lesson.label);
+          }
+        });
+      }
+      return sections.join(", ");
     },
     setDropdown(type) {
       this.dropdownSelected = type;
@@ -291,7 +255,35 @@ export default {
       });
     },
     submitCreation() {
-      this.$router.push("/education/my-platform");
+      let sections = [];
+      this.sectionsList.forEach(section => {
+        console.log(section);
+        let lessons = [];
+        section.lessons.forEach(lesson => {
+          lessons.push({
+            id: lesson.id,
+            is_active: lesson.is_active,
+            required: lesson.requirements.lessons
+          });
+        });
+        sections.push({
+          id: section.id,
+          is_active: section.is_active,
+          required: section.requirements.sections,
+          lessons
+        });
+      });
+      console.log(JSON.parse(JSON.stringify(sections)));
+      this.$api.learning.sections
+        .setAccessSections({ sections })
+        .then(data => {
+          console.log(data);
+        })
+        .catch(e => {
+          console.log(e);
+        });
+
+      // this.$router.push("/education/my-platform");
     },
     copyLink(val) {
       this.openModal("Share", val);
@@ -326,7 +318,7 @@ export default {
   }
   .save {
     display: none;
-    @media (max-width: 630px) {
+    @media (max-width: 1025px) {
       display: block;
       width: 100%;
       margin: 40px 0;
@@ -504,46 +496,19 @@ export default {
     }
   }
 
-  .tooltip {
-    position: relative;
-    cursor: pointer;
+  .PlatformSettings-radio {
+    margin: 0 26px 0 32px;
+    @media (max-width: 850px) {
+      order: 2;
+      margin: 0;
+      margin-left: 18px;
+    }
+  }
+  .PlatformSettings-copy {
     @media (max-width: 850px) {
       order: 4;
       margin-left: 18px;
     }
-  }
-  .tooltip .tooltiptext {
-    visibility: hidden;
-    padding: 0 8px;
-    width: 168px;
-    height: 34px;
-    background-color: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    border-radius: 6px;
-    position: absolute;
-    z-index: 1;
-    top: -5px;
-    left: 110%;
-    font-family: "Roboto", sans-serif;
-    font-size: 12px;
-    line-height: 18px;
-    color: #ffffff;
-  }
-  .tooltip .tooltiptext::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: 100%;
-    margin-top: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent black transparent transparent;
-  }
-  .tooltip:hover .tooltiptext {
-    visibility: visible;
   }
 
   #accessSettings {
@@ -573,46 +538,6 @@ export default {
         width: 100%;
         margin-top: 56px;
       }
-      .radio {
-        margin: 0 26px 0 32px;
-        width: 40px;
-        height: 24px;
-        background: #ebeff5;
-        border-radius: 48px;
-        position: relative;
-        transition: all ease 0.3s;
-        @media (max-width: 850px) {
-          order: 2;
-          margin: 0;
-          margin-left: 18px;
-        }
-        &__inner {
-          transition: all ease 0.3s;
-          position: absolute;
-          left: 2px;
-          top: 1px;
-          width: 22px;
-          height: 22px;
-          background: #ffffff;
-          border-radius: 50%;
-          box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1), 0px 1px 1px rgba(0, 0, 0, 0.01), 0px 3px 1px rgba(0, 0, 0, 0.03);
-        }
-      }
-      .radio.active {
-        background: #ffc107 !important;
-        .radio__inner {
-          left: 16px;
-        }
-      }
-      .title {
-        cursor: pointer;
-        font-family: "Roboto", sans-serif;
-        font-weight: bold;
-        font-size: 16px;
-        line-height: 24px;
-        color: #1d2228;
-        margin-left: 14px;
-      }
       .arrow {
         display: flex;
         align-items: center;
@@ -636,6 +561,14 @@ export default {
         &-left {
           display: flex;
           align-items: center;
+          .title {
+            margin-left: 15px;
+            font-family: "Roboto", sans-serif;
+            font-weight: bold;
+            font-size: 16px;
+            line-height: 24px;
+            color: #1d2228;
+          }
         }
         &-right {
           display: flex;

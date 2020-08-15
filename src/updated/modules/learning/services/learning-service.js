@@ -21,7 +21,7 @@ export async function getLanguages() {
 }
 
 export async function uploadFile(file, func) {
-  return ajax.post("/user-files", file, null, "form", func);
+  return ajax.post("https://platform.dev.vad.pw:443/api/user-files", file, null, "form", func);
 }
 
 export async function saveCourse(data) {

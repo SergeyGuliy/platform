@@ -1,6 +1,6 @@
 <template>
   <div id="LearningMyNewPlatform">
-    <div class="learning-box" v-if="headerIsVisible">
+    <div class="learning-box">
       <div class="learning-box__body">
         <div class="learning-box__body-head-wrapper">
           <div class="learning-box__body-head">
@@ -13,17 +13,21 @@
     </div>
     <div class="small-fixed-top">
       <div class="title">Учебный план</div>
-      <div @click="endCreation()">
-        <v-icon class="icon" src="close"></v-icon>
-      </div>
     </div>
     <div class="block LearningMyNewPlatformMain">
       <div class="header_block container__small">
-        <div class="header_block-section" v-if="!lessonIsOpen">Секций ({{ sectionsList.length }}); Уроков (98)</div>
+        <div class="header_block-section" v-if="sectionsList">
+          Секций ({{ sectionsList.length }}); Уроков ({{ totalLessons }})
+        </div>
       </div>
 
-      <div v-if="!lessonIsOpen" class="container__small">
-        <v-draggable-provider v-model="sectionsList" name="sections">
+      <div class="container__small">
+        <v-draggable-provider
+          v-if="sectionsList"
+          v-model="sectionsList"
+          name="sections"
+          @change="moveSection(sectionsList)"
+        >
           <div v-for="(section, id) in sectionsList" :key="id">
             <div class="sectionBlock">
               <div class="section-header">
@@ -45,7 +49,7 @@
                   v-model="section.title"
                   counter
                   :max="32"
-                  @input="blur(id, section.title, section.requirements.min_rank)"
+                  @input="changeSectionTitle(id, section.title, section.requirements.min_rank)"
                 />
                 <v-select
                   name="country_id"
@@ -53,16 +57,20 @@
                   rules="required"
                   v-model="section.requirements.min_rank"
                   :options="options"
-                  @input="blur(id, section.title, section.requirements.min_rank)"
+                  @input="changeSectionTitle(id, section.title, section.requirements.min_rank)"
                 />
               </div>
-              <v-draggable-provider name="lessons" v-model="section.lessons">
+              <v-draggable-provider
+                name="lessons"
+                v-model="section.lessons"
+                @change="moveLesson(section.lessons, section.id)"
+              >
                 <div class="lessons" v-for="(lesson, lessonId) in section.lessons" :key="lessonId">
                   <div class="section-header">
                     <div class="header-left">
                       <v-icon src="drag" style="cursor: grab" />
                       <div class="title-block">
-                        <div class="title">Урок {{ lessonId + 1 }}: {{ lesson.lessonName }}</div>
+                        <div class="title">Урок {{ lessonId + 1 }}: {{ lesson.title }}</div>
                         <div class="bottom-title">
                           Необходимо пройти: Урок
                           {{ -(section.lessons.length - section.lessons.length - lessonId) }}, Тест 1
@@ -79,7 +87,7 @@
                           :class="dropdownActive === `${id}-${lessonId}` ? 'more-container-active' : ''"
                         >
                           <div class="more-container-item">
-                            <button @click="editLessonActivate(id, lessonId, lesson)">
+                            <button @click="editLessonActivate(section.id, lesson.id)">
                               <v-icon src="edit" />
                               <div>Редактировать урок</div>
                             </button>
@@ -102,7 +110,12 @@
                   </div>
                 </div>
               </v-draggable-provider>
-              <v-button custom-type="text" custom-style="primary" @click="addLesson(id)" style="margin-top: 20px">
+              <v-button
+                custom-type="text"
+                custom-style="primary"
+                @click="addLesson(id, section.id)"
+                style="margin-top: 20px"
+              >
                 <div style="display: flex; align-items: center">
                   <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
                   <span class="bottom__inner">Добавить урок</span>
@@ -112,38 +125,23 @@
           </div>
         </v-draggable-provider>
       </div>
-      <LessonBlock
-        v-else
-        :createLesson="createLesson"
-        :editLesson="editLesson"
-        :activeSectionId="activeSectionId"
-        :activeLessonId="activeLessonId"
-        :crossLessonId="crossLessonId"
-        :crossLessonData="crossLessonData"
-      />
-
-      <v-button custom-type="text" custom-style="primary" v-if="!lessonIsOpen">
+      <v-button custom-type="text" custom-style="primary">
         <div style="display: flex; align-items: center">
           <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
           <span class="bottom__inner" @click="addSection">Добавить секцию</span>
         </div>
       </v-button>
     </div>
-    <button class="my-button filled save" v-if="headerIsVisible">
-      Сохранить и завершить
-    </button>
   </div>
 </template>
 
 <script>
-import LessonBlock from "../../components/paltform-new/LessonBlock";
 import VButton from "../../../../common/components/VButton";
 import Draggable from "vuedraggable";
 
 export default {
   name: "LearningMyNewPlatform",
   components: {
-    LessonBlock,
     VButton,
     "v-draggable-provider": Draggable
   },
@@ -151,281 +149,130 @@ export default {
     this.$api.learning.sections
       .getSections()
       .then(data => {
-        console.log(data.data.data);
         this.sectionsList = data.data.data;
-        // this.formData = {
-        //   title: data.data.general_information.title,
-        //   description: data.data.general_information.description,
-        //   urlVideo: data.data.general_information.video
-        // };
-        // this.isUpdating = true;
       })
       .catch(e => {
         console.log(e);
       });
   },
+  computed: {
+    totalLessons() {
+      let lessons = 0;
+      this.sectionsList.forEach(section => {
+        lessons += section.lessons.length;
+      });
+      return lessons;
+    }
+  },
   data() {
     return {
-      sectionsList: [
-        {
-          title: "Дефолтный блок 111",
-          requirements: {
-            min_rank: ""
-          },
-          lessons: [
-            {
-              lessonName: "Дефолтный урок 1",
-              lessonsBlocks: [
-                {
-                  type: "text",
-                  data:
-                    "<p>eqwqewqwe qwe qwe qwe qw q wee qw qweq weqew qwe </p><p>qw e eqw qwe ewq eqw qwe eqw</p><p> qew qwe qewq ew qew qewq we</p><p><strong> eqwewq  ewq weq</strong></p><p><strong><u> eqw eqw qew eqw</u></strong></p><ol><li><strong><u>qw e</u></strong></li><li><strong><u> qwe</u></strong></li></ol><ul><li><strong><u> eqw</u></strong></li><li><strong><u> wqe</u></strong></li></ul>"
-                },
-                {
-                  type: "video",
-                  data: {
-                    video: null,
-                    photo: null,
-                    header: null,
-                    urlPhoto: null,
-                    urlVideo: `http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4`
-                  }
-                },
-                {
-                  type: "photo",
-                  data: {
-                    urlPhoto: "https://html5css.ru/css/img_fjords.jpg"
-                  }
-                }
-              ],
-              endData: {
-                endType: "button",
-                testData: [
-                  {
-                    test: "",
-                    answer: ""
-                  }
-                ],
-                keyWord: "",
-                buttonText: "Базовая кнопка"
-              }
-            },
-            {
-              lessonName: "Дефолтный урок 2",
-              lessonsBlocks: [
-                {
-                  type: "text",
-                  data:
-                    "<p>eqwqewqwe qwe qwe qwe qw q wee qw qweq weqew qwe </p><p>qw e eqw qwe ewq eqw qwe eqw</p><p> qew qwe qewq ew qew qewq we</p><p><strong> eqwewq  ewq weq</strong></p><p><strong><u> eqw eqw qew eqw</u></strong></p><ol><li><strong><u>qw e</u></strong></li><li><strong><u> qwe</u></strong></li></ol><ul><li><strong><u> eqw</u></strong></li><li><strong><u> wqe</u></strong></li></ul>"
-                },
-                {
-                  type: "video",
-                  data: {
-                    video: null,
-                    photo: null,
-                    header: null,
-                    urlPhoto: null,
-                    urlVideo: `http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4`
-                  }
-                },
-                {
-                  type: "photo",
-                  data: {
-                    urlPhoto: "https://html5css.ru/css/img_fjords.jpg"
-                  }
-                }
-              ],
-              endData: {
-                endType: "button",
-                testData: [
-                  {
-                    test: "",
-                    answer: ""
-                  }
-                ],
-                keyWord: "",
-                buttonText: "Базовая кнопка"
-              }
-            },
-            {
-              lessonName: "Дефолтный урок 3",
-              lessonsBlocks: [
-                {
-                  type: "text",
-                  data:
-                    "<p>eqwqewqwe qwe qwe qwe qw q wee qw qweq weqew qwe </p><p>qw e eqw qwe ewq eqw qwe eqw</p><p> qew qwe qewq ew qew qewq we</p><p><strong> eqwewq  ewq weq</strong></p><p><strong><u> eqw eqw qew eqw</u></strong></p><ol><li><strong><u>qw e</u></strong></li><li><strong><u> qwe</u></strong></li></ol><ul><li><strong><u> eqw</u></strong></li><li><strong><u> wqe</u></strong></li></ul>"
-                },
-                {
-                  type: "video",
-                  data: {
-                    video: null,
-                    photo: null,
-                    header: null,
-                    urlPhoto: null,
-                    urlVideo: `http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4`
-                  }
-                },
-                {
-                  type: "photo",
-                  data: {
-                    urlPhoto: "https://html5css.ru/css/img_fjords.jpg"
-                  }
-                }
-              ],
-              endData: {
-                endType: "button",
-                testData: [
-                  {
-                    test: "",
-                    answer: ""
-                  }
-                ],
-                keyWord: "",
-                buttonText: "Базовая кнопка"
-              }
-            },
-            {
-              lessonName: "Дефолтный урок 4",
-              lessonsBlocks: [
-                {
-                  type: "text",
-                  data:
-                    "<p>eqwqewqwe qwe qwe qwe qw q wee qw qweq weqew qwe </p><p>qw e eqw qwe ewq eqw qwe eqw</p><p> qew qwe qewq ew qew qewq we</p><p><strong> eqwewq  ewq weq</strong></p><p><strong><u> eqw eqw qew eqw</u></strong></p><ol><li><strong><u>qw e</u></strong></li><li><strong><u> qwe</u></strong></li></ol><ul><li><strong><u> eqw</u></strong></li><li><strong><u> wqe</u></strong></li></ul>"
-                },
-                {
-                  type: "video",
-                  data: {
-                    video: null,
-                    photo: null,
-                    header: null,
-                    urlPhoto: null,
-                    urlVideo: `http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4`
-                  }
-                },
-                {
-                  type: "photo",
-                  data: {
-                    urlPhoto: "https://html5css.ru/css/img_fjords.jpg"
-                  }
-                }
-              ],
-              endData: {
-                endType: "button",
-                testData: [
-                  {
-                    test: "",
-                    answer: ""
-                  }
-                ],
-                keyWord: "",
-                buttonText: "Базовая кнопка"
-              }
-            },
-            {
-              lessonName: "Дефолтный урок 5",
-              lessonsBlocks: [
-                {
-                  type: "text",
-                  data:
-                    "<p>eqwqewqwe qwe qwe qwe qw q wee qw qweq weqew qwe </p><p>qw e eqw qwe ewq eqw qwe eqw</p><p> qew qwe qewq ew qew qewq we</p><p><strong> eqwewq  ewq weq</strong></p><p><strong><u> eqw eqw qew eqw</u></strong></p><ol><li><strong><u>qw e</u></strong></li><li><strong><u> qwe</u></strong></li></ol><ul><li><strong><u> eqw</u></strong></li><li><strong><u> wqe</u></strong></li></ul>"
-                },
-                {
-                  type: "video",
-                  data: {
-                    video: null,
-                    photo: null,
-                    header: null,
-                    urlPhoto: null,
-                    urlVideo: `http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4`
-                  }
-                },
-                {
-                  type: "photo",
-                  data: {
-                    urlPhoto: "https://html5css.ru/css/img_fjords.jpg"
-                  }
-                }
-              ],
-              endData: {
-                endType: "button",
-                testData: [
-                  {
-                    test: "",
-                    answer: ""
-                  }
-                ],
-                keyWord: "",
-                buttonText: "Базовая кнопка"
-              }
-            }
-          ]
-        },
-
-        {
-          title: "Дефолтный блок 222",
-          requirements: {
-            min_rank: ""
-          },
-          lessons: [
-            {
-              lessonName: "Дефолтный урок",
-              lessonsBlocks: [],
-              endData: {
-                endType: "button",
-                testData: [
-                  {
-                    test: "",
-                    answer: ""
-                  }
-                ],
-                keyWord: "",
-                buttonText: ""
-              }
-            }
-          ]
-        }
-      ],
-      lessonIsOpen: false,
-      headerIsVisible: true,
+      sectionsList: null,
       options: [
         {
-          value: "DT4",
-          label: "DT4"
+          value: 1,
+          label: "R"
         },
         {
-          value: "DT5",
-          label: "DT5"
+          value: 2,
+          label: "AM"
         },
         {
-          value: "STAR",
+          value: 3,
+          label: "SM"
+        },
+        {
+          value: 4,
+          label: "M"
+        },
+        {
+          value: 5,
+          label: "ME"
+        },
+        {
+          value: 6,
           label: "STAR"
         },
         {
-          value: "ЛО = < 70",
-          label: "ЛО = < 70"
+          value: 7,
+          label: "1S"
         },
         {
-          value: "ЛО = 70",
-          label: "ЛО = 70"
+          value: 8,
+          label: "2S"
+        },
+        {
+          value: 9,
+          label: "DS"
+        },
+        {
+          value: 10,
+          label: "DT"
+        },
+        {
+          value: 11,
+          label: "DT1"
+        },
+        {
+          value: 12,
+          label: "DT2"
+        },
+        {
+          value: 13,
+          label: "DT3"
+        },
+        {
+          value: 14,
+          label: "DT4"
+        },
+        {
+          value: 15,
+          label: "DT5"
         }
       ],
-      activeSectionId: 0,
-      activeLessonId: 0,
-      crossLessonData: null,
-      crossLessonId: null,
       dropdownActive: null
     };
   },
   methods: {
-    blur(sectionId, title, min_rank) {
-      console.log(sectionId);
-      console.log(title);
-      console.log(min_rank);
-      this.$api.learning.sections
-        .changeLesson(sectionId, {
-          title: title,
-          min_rank: min_rank
+    showPreview(data) {
+      this.$store.commit("general/SET_PREVIEW_DATA", data);
+      this.$router.push({ name: "educationNewPlatformPreview" });
+    },
+    cleanDropdown() {
+      this.dropdownActive = null;
+    },
+
+    moveLesson(lessons, sectionId) {
+      let lessonsOrder = { ids: lessons.map(lesson => +lesson.id) };
+      this.$api.learning.lessons
+        .reorderLessons(sectionId, lessonsOrder)
+        .then(data => {
+          console.log(data.data);
         })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+    moveSection(sections) {
+      let sectionsOrder = { ids: sections.map(section => +section.id) };
+      this.$api.learning.sections
+        .reorderSections(sectionsOrder)
+        .then(data => {
+          console.log(data.data);
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+
+    changeSectionTitle(sectionId, title, min_rank) {
+      let data = {
+        title: title,
+        access_rank_id: min_rank
+      };
+      console.log(this.sectionsList[sectionId]);
+      console.log(data);
+      this.$api.learning.sections
+        .changeSection(this.sectionsList[sectionId].id, this.sectionsList[sectionId])
         .then(data => {
           console.log(data);
         })
@@ -433,96 +280,70 @@ export default {
           console.log(e);
         });
     },
-    showPreview(data) {
-      this.$store.commit("general/SET_PREVIEW_DATA", data);
-      this.$router.push({ name: "educationNewPlatformPreview" });
-    },
-    deleteLesson(sectionId, lessonId) {
-      this.openModal("DeleteLesson")
-        .then(() => {
-          this.sectionsList[sectionId].lessons.splice(lessonId, 1);
-        })
-        .catch(() => {});
-    },
-    deleteSection(id) {
-      console.log(this.sectionsList[id].id);
-      this.openModal("DeleteSection")
-        .then(() => {
-          this.sectionsList.splice(id, 1);
-          console.log(this.sectionsList[id].id);
-          this.$api.learning.sections
-            .deleteSection(this.sectionsList[id].id)
-            .then(data => {
-              console.log(data);
-            })
-            .catch(e => {
-              console.log(e);
-            });
-        })
-        .catch(() => {});
-    },
-    endCreation() {
-      this.openModal("Submit").then(() => {
-        this.$router.push("/education/my-platform");
-      });
-    },
-    editLessonActivate(sectionId, lessonId, data) {
-      this.crossLessonData = data;
-      this.crossLessonId = `${sectionId}-${lessonId}`;
-      this.lessonIsOpen = true;
-    },
-    addLesson(id) {
-      this.activeSectionId = id;
-      this.activeLessonId = this.sectionsList[id].lessons.length;
-      this.lessonIsOpen = true;
-      this.$api.learning.lessons
-        .createLesson(id, { title: "", is_active: true })
-        .then(data => {
-          console.log(data.data);
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    },
-    cleanDropdown() {
-      this.dropdownActive = null;
-    },
+
     addSection() {
       this.$api.learning.sections
         .createSection({ title: "Новая секция", is_active: true, finish_type: {} })
         .then(data => {
           console.log(data.data);
-
           this.sectionsList.push({
-            title: "Новая секция",
-            requirements: {
-              min_rank: ""
-            },
-            lessons: []
+            ...data.data.data,
+            finish: {}
           });
         })
         .catch(e => {
           console.log(e.data.message);
         });
     },
-    // submitCreation() {
-    //   this.$router.push("/education/my-platform");
-    // },
-    createLesson(sectionId, lessonId, lessonData) {
-      this.sectionsList[sectionId].lessons.push(lessonData);
-      this.lessonIsOpen = false;
-      this.crossLessonId = null;
-      this.crossLessonData = null;
-      this.activeLessonId = null;
-      this.activeSectionId = null;
+    deleteSection(id) {
+      console.log(this.sectionsList[id].id);
+      this.openModal("DeleteSection")
+        .then(() => {
+          console.log(this.sectionsList[id].id);
+          this.$api.learning.sections
+            .deleteSection(this.sectionsList[id].id)
+            .then(data => {
+              console.log(data);
+              this.sectionsList.splice(id, 1);
+            })
+            .catch(e => {
+              console.error("ERROR WHILE DELETING SECTION");
+              console.error(e);
+            });
+        })
+        .catch(() => {});
     },
-    editLesson(ids, lessonData) {
-      this.sectionsList[ids.split("-")[0]].lessons[ids.split("-")[1]] = lessonData;
-      this.lessonIsOpen = false;
-      this.crossLessonId = null;
-      this.crossLessonData = null;
-      this.activeLessonId = null;
-      this.activeSectionId = null;
+    addLesson(id, sectionServerId) {
+      this.$api.learning.lessons
+        .createLesson(this.sectionsList[id].id, { title: "Новый урок", is_active: true })
+        .then(data => {
+          console.log(data.data.data);
+          this.sectionsList[id].lessons.push(data.data.data);
+          this.editLessonActivate(sectionServerId, data.data.data.id);
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+    deleteLesson(sectionId, lessonId) {
+      this.openModal("DeleteLesson")
+        .then(() => {
+          this.$api.learning.lessons
+            .deleteLesson(this.sectionsList[sectionId].id, this.sectionsList[sectionId].lessons[lessonId].id)
+            .then(data => {
+              console.log(data.data);
+              this.sectionsList[sectionId].lessons.splice(lessonId, 1);
+            })
+            .catch(e => {
+              console.error("ERROR WHILE DELETING LESSON");
+              console.error(e);
+            });
+        })
+        .catch(() => {});
+    },
+    editLessonActivate(sectionServerId, lessonServerId) {
+      let crossLessonId = `${sectionServerId}-${lessonServerId}`;
+      this.$router.push({ name: "educationNewPlatformNewLesson", params: { id: crossLessonId } });
     }
   }
 };
@@ -534,6 +355,25 @@ export default {
 #LearningMyNewPlatform {
   @media (max-width: 630px) {
     margin-top: 56px;
+  }
+  .my-button {
+    outline: none;
+    height: 40px;
+    font-family: "Roboto", sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: #1d2228;
+  }
+  .outlined {
+    background: #ffffff;
+    border: 1px solid #ffc107;
+    border-radius: 6px;
+  }
+  .filled {
+    background: #ffc107;
+    border-radius: 6px;
   }
   .small-fixed-top {
     display: none;
@@ -561,34 +401,6 @@ export default {
         font-size: 24px;
       }
     }
-  }
-  .save {
-    display: none;
-    @media (max-width: 630px) {
-      display: block;
-      width: 100%;
-      margin: 40px 0;
-      height: 48px !important;
-    }
-  }
-  .my-button {
-    outline: none;
-    height: 40px;
-    font-family: "Roboto", sans-serif;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 24px;
-    color: #1d2228;
-  }
-  .outlined {
-    background: #ffffff;
-    border: 1px solid #ffc107;
-    border-radius: 6px;
-  }
-  .filled {
-    background: #ffc107;
-    border-radius: 6px;
   }
   .container__small {
     width: 604px;

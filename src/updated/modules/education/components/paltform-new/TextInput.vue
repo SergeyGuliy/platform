@@ -32,6 +32,8 @@ export default {
     }
   },
   created() {
+    console.log(this.crossData);
+    console.log(this.crossId);
     if (this.crossData) {
       this.formData = this.crossData;
     } else {

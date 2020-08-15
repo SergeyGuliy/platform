@@ -4,7 +4,10 @@
       <div class="uploader-descriptor__control-item-result-label input-label">
         {{ config.label }} (<span class="file-size">{{ config.size }}</span> MB )
       </div>
-      <Stick :config="{ name: config.name, progress: config.progress }"></Stick>
+      <Stick
+        :config="{ name: config.name, progress: config.progress, directiveId: config.directiveId }"
+        :cleanById="cleanById"
+      />
     </div>
     <div class="uploader-descriptor__control-item-action">
       <label v-upload:[config.directiveId]="emitUpload">
@@ -25,7 +28,7 @@ export default {
   name: "VideoControl",
   directives: { upload: UploadDirective },
   components: { Stick },
-  props: ["config"],
+  props: ["config", "cleanById"],
   methods: {
     emitUpload(data) {
       this.$emit("uploadFile", data);

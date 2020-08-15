@@ -1,6 +1,6 @@
 <template>
   <div
-    class="form-group"
+    class="form-group select"
     :class="{
       'has-danger': errors.has(name, scope),
       'has-error': errors.has(name, scope)
@@ -72,6 +72,7 @@ export default {
   },
   methods: {
     inputHandlerSelect(e) {
+      console.log("fff");
       let value;
 
       if (this.multiple) {
@@ -98,12 +99,26 @@ export default {
 </script>
 
 <style lang="scss">
-.form-group .vs__dropdown-toggle {
-  cursor: pointer;
-  height: 40px;
-  .v-select,
-  .vs__selected-options {
+.form-group.select {
+  .vs__dropdown-toggle {
+    cursor: pointer;
     height: 40px;
+    .v-select,
+    .vs__selected-options {
+      height: 40px;
+    }
+    .vs__selected {
+      bottom: 8px;
+      left: 12px;
+      background-color: white;
+      font-family: "Roboto", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 24px;
+      color: #1d2228;
+      padding: 0;
+      margin: 0;
+    }
   }
   #vs1__combobox {
     height: 40px;
@@ -113,26 +128,19 @@ export default {
   input {
     border: none !important;
   }
-  .vs__selected {
-    bottom: 8px;
-    left: 12px;
-    background-color: white;
-    font-family: "Roboto", sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 24px;
-    color: #1d2228;
-    padding: 0;
-    margin: 0;
-  }
+
   .vs--open {
     #vs1__combobox {
       border: 1px solid #ffc107 !important;
     }
     #vs1__listbox {
+      max-height: 200px !important;
       border: 1px solid #ffc107 !important;
       border-top: none;
     }
+  }
+  .vs__dropdown-menu {
+    max-height: 200px !important;
   }
 }
 </style>

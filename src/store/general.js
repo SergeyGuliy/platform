@@ -7,6 +7,7 @@ export const state = {
 
   isMobile: false,
   isDesktop: false,
+  //Logic for creating sections and lessons
   previewData: null
 };
 

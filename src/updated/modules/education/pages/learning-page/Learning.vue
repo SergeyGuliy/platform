@@ -8,7 +8,8 @@
             $route.name !== 'educationNewPlatform' &&
               $route.name !== 'educationNewPlatformSettings' &&
               $route.name !== 'educationNewPlatformMainInfo' &&
-              $route.name !== 'educationNewPlatformPreview'
+              $route.name !== 'educationNewPlatformPreview' &&
+              $route.name !== 'educationNewPlatformNewLesson'
           "
         >
           <div class="learning-box__body-head-title">Обучение</div>

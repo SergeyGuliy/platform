@@ -27,20 +27,15 @@
           :options="options"
         />
 
-        <v-button
-          custom-type="text"
-          custom-style="primary"
-          v-if="formData.header === null"
-          @click="formData.header = ''"
-        >
+        <v-button custom-type="text" custom-style="primary" v-if="formData.title === null" @click="formData.title = ''">
           <div style="display: flex; align-items: center">
             <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
             <span class="bottom__inner">Добавить заголовок к фото</span>
           </div>
         </v-button>
         <div v-else class="input-block">
-          <v-input name="telegram.login" title="Заголовок" rules="required" v-model="formData.header" />
-          <div @click="formData.header = null">
+          <v-input name="telegram.login" title="Заголовок" rules="required" v-model="formData.title" />
+          <div @click="formData.title = null">
             <v-icon src="delete" />
           </div>
         </div>
@@ -69,6 +64,7 @@
 
 <script>
 import VButton from "../../../../common/components/VButton";
+import { uploadFile } from "@/updated/modules/learning/services/learning-service";
 
 export default {
   name: "PhotoInput",
@@ -76,8 +72,9 @@ export default {
     return {
       formData: {
         photo: null,
-        header: null,
-        size: "На 25% ширины"
+        title: null,
+        size: "На 25% ширины",
+        id: null
       },
       options: [
         {
@@ -128,15 +125,16 @@ export default {
     cleanPhoto() {
       if (this.formData.photo) {
         this.formData.photo = null;
+        this.formData.id = null;
         this.urlPhoto = null;
       }
     },
     sendData() {
-      if (this.formData.photo !== null) {
+      if (this.formData.id) {
         this.savePhotoEditor(
           {
-            ...this.formData,
-            urlPhoto: this.urlPhoto
+            title: this.formData.title ? this.formData.title : this.formData.photo.name,
+            resource_id: this.formData.id
           },
           this.crossId
         );
@@ -151,6 +149,15 @@ export default {
       let files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
 
+      uploadFile({ file: files[0] })
+        .then(res => {
+          const data = res.data.data;
+          console.log(data);
+          this.formData.id = data.id;
+        })
+        .catch(e => {
+          console.log(e);
+        });
       this.formData.photo = files[0];
       this.urlPhoto = URL.createObjectURL(this.formData.photo);
     },
@@ -170,14 +177,17 @@ export default {
     }
   },
   created() {
+    console.log(this.crossData);
+    console.log(this.crossId);
     if (this.crossData) {
       this.formData = { ...this.crossData };
       this.urlPhoto = this.crossData.urlPhoto;
     } else {
       this.formData = {
         photo: null,
-        header: null,
-        size: "full"
+        title: null,
+        size: "full",
+        id: null
       };
     }
   },

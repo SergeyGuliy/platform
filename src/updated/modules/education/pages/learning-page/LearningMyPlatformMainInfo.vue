@@ -47,86 +47,96 @@
         в 5 раз. А при наличии исключительно хороших видео — даже в 10 раз.
       </p>
       <div class="block">
-        <div class="left">
-          <v-button custom-type="text" custom-style="primary" @click="uploadVideo" v-if="!formData.video_id">
-            <div style="display: flex; align-items: center">
-              <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
-              <span class="bottom__inner">Добавить видео</span>
-            </div>
-          </v-button>
-          <div class="file-input" v-else>
-            <div class="lable">
-              Видео {{ formData.video_id ? `(${converterFileSize(formData.video_id.size)})` : "" }}
-            </div>
-            <div class="input" :class="formData.video_id ? 'active' : ''">
-              <div class="file-name">{{ formData.video_id ? formData.video_id.name : "" }}</div>
-              <div @click.stop="cleanVideo">
-                <v-icon src="delete" />
-              </div>
-            </div>
-          </div>
-          <v-button custom-type="text" custom-style="primary" @click="uploadPhoto" v-if="!formData.photo">
-            <div style="display: flex; align-items: center">
-              <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>
-              <span class="bottom__inner">Добавить обложку видео</span>
-            </div>
-          </v-button>
-          <div class="file-input" v-else>
-            <div class="lable">Оболожка {{ formData.photo ? `(${converterFileSize(formData.photo.size)})` : "" }}</div>
-            <div class="input" :class="formData.photo ? 'active' : ''">
-              <div class="file-name">{{ formData.photo ? formData.photo.name : "" }}</div>
-              <div @click="cleanPhoto">
-                <v-icon src="delete" />
-              </div>
-            </div>
-          </div>
+        <!--        <div class="left">-->
+        <!--          <v-button custom-type="text" custom-style="primary" @click="uploadVideo" v-if="!formData.video_id">-->
+        <!--            <div style="display: flex; align-items: center">-->
+        <!--              <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>-->
+        <!--              <span class="bottom__inner">Добавить видео</span>-->
+        <!--            </div>-->
+        <!--          </v-button>-->
+        <!--          <div class="file-input" v-else>-->
+        <!--            <div class="lable">-->
+        <!--              Видео {{ formData.video_id ? `(${converterFileSize(formData.video_id.size)})` : "" }}-->
+        <!--            </div>-->
+        <!--            <div class="input" :class="formData.video_id ? 'active' : ''">-->
+        <!--              <div class="file-name">{{ formData.video_id ? formData.video_id.name : "" }}</div>-->
+        <!--              <div @click.stop="cleanVideo">-->
+        <!--                <v-icon src="delete" />-->
+        <!--              </div>-->
+        <!--            </div>-->
+        <!--          </div>-->
+        <!--          <v-button custom-type="text" custom-style="primary" @click="uploadPhoto" v-if="!formData.photo">-->
+        <!--            <div style="display: flex; align-items: center">-->
+        <!--              <v-icon src="plus" style="fill: #ffc107; margin-right: 10px;"></v-icon>-->
+        <!--              <span class="bottom__inner">Добавить обложку видео</span>-->
+        <!--            </div>-->
+        <!--          </v-button>-->
+        <!--          <div class="file-input" v-else>-->
+        <!--            <div class="lable">Оболожка {{ formData.photo ? `(${converterFileSize(formData.photo.size)})` : "" }}</div>-->
+        <!--            <div class="input" :class="formData.photo ? 'active' : ''">-->
+        <!--              <div class="file-name">{{ formData.photo ? formData.photo.name : "" }}</div>-->
+        <!--              <div @click="cleanPhoto">-->
+        <!--                <v-icon src="delete" />-->
+        <!--              </div>-->
+        <!--            </div>-->
+        <!--          </div>-->
 
-          <input
-            type="file"
-            accept="video/*"
-            style="display: none"
-            id="selectVideo"
-            ref="selectVideo"
-            v-on:change="uploadVideoAction"
-          />
-          <input
-            type="file"
-            accept="image/*"
-            style="display: none"
-            id="selectPhoto"
-            ref="selectPhoto"
-            v-on:change="uploadPhotoAction"
-          />
-        </div>
-        <div class="right">
-          <video
-            v-show="formData.urlVideo || formData.urlPhoto"
-            :poster="formData.urlPhoto"
-            :src="formData.urlVideo"
-            width="240px"
-            controls
-            id="videoBox"
-          />
-          <div class="right-header">
-            {{ formData.video_id ? formData.video_id.name : "" }}
-            <div>{{ formData.duration }}</div>
-          </div>
-        </div>
+        <!--          <input-->
+        <!--            type="file"-->
+        <!--            accept="video/*"-->
+        <!--            style="display: none"-->
+        <!--            id="selectVideo"-->
+        <!--            ref="selectVideo"-->
+        <!--            v-on:change="uploadVideoAction"-->
+        <!--          />-->
+        <!--          <input-->
+        <!--            type="file"-->
+        <!--            accept="image/*"-->
+        <!--            style="display: none"-->
+        <!--            id="selectPhoto"-->
+        <!--            ref="selectPhoto"-->
+        <!--            v-on:change="uploadPhotoAction"-->
+        <!--          />-->
+        <!--        </div>-->
+        <!--        <div class="right">-->
+        <!--          <video-->
+        <!--            v-show="formData.urlVideo || formData.urlPhoto"-->
+        <!--            :poster="formData.urlPhoto"-->
+        <!--            :src="formData.urlVideo"-->
+        <!--            width="240px"-->
+        <!--            controls-->
+        <!--            id="videoBox"-->
+        <!--          />-->
+        <!--          <div class="right-header">-->
+        <!--            {{ formData.video_id ? formData.video_id.name : "" }}-->
+        <!--            <div>{{ formData.duration }}</div>-->
+        <!--          </div>-->
+        <!--        </div>-->
+        <VideoUpload
+          @uploadFileData="coverUpload"
+          :cleanById="cleanById"
+          :video-data="data"
+          :show-key="showKey"
+          :controls="controls"
+        ></VideoUpload>
       </div>
+      <button class="my-button filled save" @click="submit">
+        Сохранить
+      </button>
     </div>
-    <button class="my-button filled save" @click="submit">
-      Сохранить
-    </button>
   </div>
 </template>
 
 <script>
 import VButton from "../../../../common/components/VButton";
+import VideoUpload from "../../../learning/user-courses/components/VideoUpload";
+import { uploadFile } from "@/updated/modules/learning/services/learning-service";
 
 export default {
   name: "EducationPlatform",
   components: {
-    VButton
+    VButton,
+    VideoUpload
   },
   created() {
     this.$api.learning.tutorial
@@ -145,6 +155,40 @@ export default {
   },
   data() {
     return {
+      showKey: 0,
+      controls: [
+        {
+          id: 1,
+          label: "Видео",
+          name: "ew",
+          preview: "Добавить видео",
+          size: "",
+          isActive: false,
+          directiveId: "video"
+        },
+        {
+          id: 2,
+          label: "Обложка",
+          name: "qwe",
+          preview: "Добавить обложку видео",
+          size: "",
+          isActive: false,
+          directiveId: "poster"
+        }
+      ],
+
+      data: {
+        video: {
+          name: "",
+          src: "",
+          id: ""
+        },
+        poster: {
+          name: "",
+          src: "",
+          id: ""
+        }
+      },
       formData: {
         title: null,
         description: null,
@@ -157,29 +201,71 @@ export default {
       isUpdating: false
     };
   },
-  watch: {
-    "formData.urlVideo"(val) {
-      if (val) {
-        let vid = document.getElementById("videoBox");
-        let i = setInterval(() => {
-          if (vid.readyState > 0) {
-            let minutes = parseInt(vid.duration / 60, 10);
-            let seconds = vid.duration % 60;
-            seconds = `${seconds}`.split(".")[0];
-            console.log(`${minutes}:${seconds}`);
-            this.formData.duration = `${minutes}:${seconds}`;
-            clearInterval(i);
-          }
-        }, 1);
-      }
-    }
-  },
+  // watch: {
+  //   "formData.urlVideo"(val) {
+  //     if (val) {
+  //       let vid = document.getElementById("video_player");
+  //       let i = setInterval(() => {
+  //         if (vid.readyState > 0) {
+  //           let minutes = parseInt(vid.duration / 60, 10);
+  //           let seconds = vid.duration % 60;
+  //           seconds = `${seconds}`.split(".")[0];
+  //           console.log(`${minutes}:${seconds}`);
+  //           this.formData.duration = `${minutes}:${seconds}`;
+  //           clearInterval(i);
+  //         }
+  //       }, 1);
+  //     }
+  //   }
+  // },
 
   methods: {
+    cleanById(directiveId) {
+      let item = null;
+      console.log(item);
+      this.data[directiveId] = {
+        name: "",
+        src: "",
+        id: ""
+      };
+      this.controls.forEach(id => {
+        if (id.directiveId === directiveId) {
+          id.isActive = false;
+        }
+      });
+    },
+    coverUpload(file) {
+      console.log(file);
+      uploadFile({ file: file.file })
+        .then(res => {
+          const data = res.data.data;
+
+          this.data[file.id].src = data.url;
+          this.data[file.id].name = data.name;
+          this.data[file.id].id = data.id;
+          this.controls = this.controls.map(item => {
+            if (item.directiveId === file.id) {
+              item.isActive = true;
+              item.name = file.file.name;
+              item.size = Math.ceil(file.file.size / (1024 * 1024)).toFixed(2);
+            }
+            return item;
+          });
+          this.showKey++;
+        })
+        .catch(err => {
+          alert(err.statusText);
+        });
+    },
+
     async submit() {
       if (this.isUpdating) {
         this.$api.learning.tutorial
-          .updateTutorial(this.formData)
+          .updateTutorial({
+            title: this.formData.title,
+            description: this.formData.description,
+            video_id: this.data.video.id
+          })
           .then(data => {
             console.log(data);
             this.$router.push("/education/my-platform");
@@ -189,7 +275,11 @@ export default {
           });
       } else {
         this.$api.learning.tutorial
-          .createTutorial(this.formData)
+          .createTutorial({
+            title: this.formData.title,
+            description: this.formData.description,
+            video_id: this.data.video.src
+          })
           .then(data => {
             console.log(data);
             this.$router.push("/education/my-platform");
@@ -203,54 +293,6 @@ export default {
       this.openModal("Submit").then(() => {
         this.$router.push("/education/my-platform");
       });
-    },
-    cleanPhoto() {
-      if (this.formData.photo) {
-        this.formData.photo = null;
-        this.formData.urlPhoto = null;
-      }
-    },
-    cleanVideo() {
-      if (this.formData.video_id) {
-        this.formData.video_id = null;
-        this.formData.urlVideo = null;
-        this.formData.duration = null;
-      }
-    },
-    uploadVideo() {
-      if (this.formData.video_id) return;
-      document.getElementById("selectVideo").click();
-    },
-    uploadPhoto() {
-      document.getElementById("selectPhoto").click();
-    },
-    uploadVideoAction(e) {
-      let files = e.target.files || e.dataTransfer.files;
-      if (!files.length) return;
-
-      this.formData.video_id = files[0];
-      this.formData.urlVideo = URL.createObjectURL(this.formData.video_id);
-    },
-    uploadPhotoAction(e) {
-      let files = e.target.files || e.dataTransfer.files;
-      if (!files.length) return;
-
-      this.formData.photo = files[0];
-      this.formData.urlPhoto = URL.createObjectURL(this.formData.photo);
-    },
-    converterFileSize(bytes, dp = 1) {
-      const thresh = 1000;
-      if (Math.abs(bytes) < thresh) {
-        return bytes + " B";
-      }
-      const units = ["KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-      let u = -1;
-      const r = 10 ** dp;
-      do {
-        bytes /= thresh;
-        ++u;
-      } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
-      return bytes.toFixed(dp) + " " + units[u];
     }
   }
 };
@@ -259,6 +301,25 @@ export default {
 #LearningMyPlatformSettings {
   @media (max-width: 740px) {
     margin-top: 65px;
+  }
+  .uploader-descriptor {
+    width: 100%;
+    svg {
+      fill: #ffc107 !important;
+    }
+    .uploader-descriptor__control,
+    .uploader-descriptor__view {
+      width: 45%;
+      .uploader-descriptor__view-preview {
+        margin: 0;
+        #video_player {
+          width: 100%;
+        }
+        video {
+          width: 100%;
+        }
+      }
+    }
   }
   .my-button {
     outline: none;
@@ -282,7 +343,7 @@ export default {
   }
   .save {
     display: none;
-    @media (max-width: 630px) {
+    @media (max-width: 1025px) {
       display: block;
       width: 100%;
       margin: 40px 0;
@@ -320,99 +381,6 @@ export default {
     }
   }
 
-  .dropdown {
-    border: 1px solid #ffc107;
-    box-sizing: border-box;
-    border-radius: 6px 6px 0 0;
-    width: 47%;
-    height: 40px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    border-bottom: none;
-    span {
-      margin-left: 12px;
-      font-family: "Roboto", sans-serif;
-      font-weight: 500;
-      font-size: 14px;
-      line-height: 24px;
-      color: #9ca1ab;
-    }
-    .dropdown__inner {
-      width: 100%;
-      position: absolute;
-      top: 39px;
-      padding: 0 19px;
-      background-color: #ffffff;
-      border: 1px solid #ffc107;
-      border-top: 1px solid #ebeff5;
-      border-radius: 0 0 6px 6px;
-      .item {
-        height: 36px;
-        display: flex;
-        align-items: center;
-        &-checkbox {
-          height: 18px;
-          width: 18px;
-          border: 2px solid #ffc107;
-          border-radius: 2px;
-          &-inner {
-            svg {
-              fill: #ffc107;
-            }
-          }
-        }
-        &-text {
-          margin-left: 11px;
-          color: #ffc107;
-          font-family: "Roboto", sans-serif;
-          font-weight: 500;
-          font-size: 14px;
-          line-height: 24px;
-        }
-      }
-    }
-  }
-  .tooltip {
-    position: relative;
-  }
-
-  .tooltip .tooltiptext {
-    visibility: hidden;
-    padding: 0 8px;
-    width: 168px;
-    height: 34px;
-    background-color: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    border-radius: 6px;
-    position: absolute;
-    z-index: 1;
-    top: -5px;
-    left: 110%;
-    font-family: "Roboto", sans-serif;
-    font-size: 12px;
-    line-height: 18px;
-    color: #ffffff;
-  }
-
-  .tooltip .tooltiptext::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: 100%;
-    margin-top: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent black transparent transparent;
-  }
-  .tooltip:hover .tooltiptext {
-    visibility: visible;
-  }
-  #header {
-  }
   #mainInfo {
     width: 604px;
     @media (max-width: 834px) {

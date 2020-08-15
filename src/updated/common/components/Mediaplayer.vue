@@ -2,7 +2,7 @@
   <vue-plyr :options="{ controls }">
     <video controls crossorigin playsinline :poster="config.poster.src" id="video_player">
       <source :src="config.video.src" :type="config.video.type" />
-      <track kind="captions" :label="config.trackLabel" :srclang="config.trackLang" :src="config.track.src" default />
+      <!--      <track kind="captions" :label="config.trackLabel" :srclang="config.trackLang" :src="config.track.src" default />-->
     </video>
   </vue-plyr>
 </template>
