@@ -27,9 +27,9 @@
 import {
   educationAllCourses,
   educationTeam,
-  educationPlatform,
-  educationMyCourses
+  educationPlatform
 } from "../../services/routes/education-courses-routes-name";
+import { educationMyPlatforms } from "../../../creating_new_course/services/routes/creating_new_course-routes-name";
 import { preloaderDirective } from "../../../../directives/preloader";
 
 export default {
@@ -45,10 +45,13 @@ export default {
       tabs: [
         { label: "Платформа", value: educationPlatform },
         { label: "Командные", value: educationTeam },
-        { label: "Мое обучение", value: educationMyCourses },
+        { label: "Мое обучение", value: educationMyPlatforms },
         { label: "Все курсы", value: educationAllCourses }
       ]
     };
+  },
+  mounted() {
+    console.log(this.$route);
   },
   methods: {
     actionHandler(tab) {

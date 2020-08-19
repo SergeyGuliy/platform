@@ -3,6 +3,7 @@ import Vuex from "vuex";
 
 import { learningStore } from "../updated/modules/learning/store/learning-store";
 import { courseStore } from "../updated/modules/education/services/store/course-store";
+import { newCourse } from "../updated/modules/creating_new_course/services/store/creating_new_course";
 
 Vue.use(Vuex);
 
@@ -37,7 +38,8 @@ const store = new Vuex.Store({
       actions: require("../store/tools-pages").actions
     },
     learning: learningStore,
-    course: courseStore
+    course: courseStore,
+    newCourse: newCourse
   }
 });
 

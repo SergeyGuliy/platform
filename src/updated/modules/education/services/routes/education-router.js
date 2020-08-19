@@ -9,14 +9,15 @@ import {
   educationCourseContent,
   courseResource,
   courseLearningPlan,
-  courseAbout,
-  educationNewPlatform,
-  educationMyCourses,
-  educationNewPlatformSettings,
-  educationNewPlatformMainInfo,
-  educationNewPlatformPreview,
-  educationNewPlatformNewLesson
+  courseAbout
+  // educationNewPlatform,
+  // educationMyCourses,
+  // educationNewPlatformSettings,
+  // educationNewPlatformMainInfo,
+  // educationNewPlatformPreview,
+  // educationNewPlatformNewLesson
 } from "./education-courses-routes-name";
+import { creatingNewCourseRoutes } from "../../../creating_new_course/services/routes/creating_new_course";
 
 const baseCourseUrl = "/education/courses";
 export const educationRoutes = [
@@ -29,6 +30,7 @@ export const educationRoutes = [
       layout: "app"
     },
     children: [
+      ...creatingNewCourseRoutes,
       {
         path: "team",
         name: educationTeam,
@@ -52,55 +54,55 @@ export const educationRoutes = [
         meta: {
           layout: "app"
         }
-      },
-      {
-        path: "my-platform",
-        name: educationMyCourses,
-        component: () => import("../../pages/learning-page/LearningMyPlatforms"),
-        meta: {
-          layout: "app"
-        }
-      },
-      {
-        path: "platform-new",
-        name: educationNewPlatform,
-        component: () => import("../../pages/learning-page/LearningMyNewPlatform"),
-        meta: {
-          layout: "app"
-        }
-      },
-      {
-        path: "platform-new/:id",
-        name: educationNewPlatformNewLesson,
-        component: () => import("../../pages/learning-page/LearningMyNewPlatformNewLesson"),
-        meta: {
-          layout: "app"
-        }
-      },
-      {
-        path: "platform-settings",
-        name: educationNewPlatformSettings,
-        component: () => import("../../pages/learning-page/LearningMyPlatformSettings"),
-        meta: {
-          layout: "app"
-        }
-      },
-      {
-        path: "platform-main-info",
-        name: educationNewPlatformMainInfo,
-        component: () => import("../../pages/learning-page/LearningMyPlatformMainInfo"),
-        meta: {
-          layout: "app"
-        }
-      },
-      {
-        path: "platform-preview",
-        name: educationNewPlatformPreview,
-        component: () => import("../../pages/learning-page/LearningMyNewPlatformPreview"),
-        meta: {
-          layout: "app"
-        }
       }
+      // {
+      //   path: "my-platform",
+      //   name: educationMyCourses,
+      //   component: () => import("../../pages/learning-page/LearningMyPlatforms"),
+      //   meta: {
+      //     layout: "app"
+      //   }
+      // },
+      // {
+      //   path: "platform-new",
+      //   name: educationNewPlatform,
+      //   component: () => import("../../pages/learning-page/LearningMyNewPlatform"),
+      //   meta: {
+      //     layout: "app"
+      //   }
+      // },
+      // {
+      //   path: "platform-new/:id",
+      //   name: educationNewPlatformNewLesson,
+      //   component: () => import("../../pages/learning-page/LearningMyNewPlatformNewLesson"),
+      //   meta: {
+      //     layout: "app"
+      //   }
+      // },
+      // {
+      //   path: "platform-settings",
+      //   name: educationNewPlatformSettings,
+      //   component: () => import("../../pages/learning-page/LearningMyPlatformSettings"),
+      //   meta: {
+      //     layout: "app"
+      //   }
+      // },
+      // {
+      //   path: "platform-main-info",
+      //   name: educationNewPlatformMainInfo,
+      //   component: () => import("../../pages/learning-page/LearningMyPlatformMainInfo"),
+      //   meta: {
+      //     layout: "app"
+      //   }
+      // },
+      // {
+      //   path: "platform-preview",
+      //   name: educationNewPlatformPreview,
+      //   component: () => import("../../pages/learning-page/LearningMyNewPlatformPreview"),
+      //   meta: {
+      //     layout: "app"
+      //   }
+      // }
     ]
   },
   {
